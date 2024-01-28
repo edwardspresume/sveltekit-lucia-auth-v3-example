@@ -2,14 +2,12 @@ import type { Actions, PageServerLoad } from './$types';
 
 import { redirect } from 'sveltekit-flash-message/server';
 
-import { SESSION_COOKIE_NAME } from '$lib/constants';
-import { getUserName } from '$lib/database/databaseUtils.server';
 import { route } from '$lib/ROUTES';
+import { lucia } from '$lib/database/auth.server';
+import { getUserName } from '$lib/database/databaseUtils.server';
 
-export const load = (async ({ cookies }) => {
-	const userId = cookies.get(SESSION_COOKIE_NAME);
-
-	if (!userId) {
+export const load = (async ({ locals: { user }, cookies }) => {
+	if (!user) {
 		throw redirect(
 			route('/auth/login'),
 			{
@@ -19,15 +17,23 @@ export const load = (async ({ cookies }) => {
 			cookies
 		);
 	}
+
 	return {
-		loggedOnUserName: await getUserName(userId)
+		loggedOnUserName: await getUserName(user.id)
 	};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	default: async ({ cookies }) => {
-		cookies.delete(SESSION_COOKIE_NAME, {
-			path: route('/')
+	logout: async ({ cookies, locals }) => {
+		if (!locals.session?.id) return;
+
+		await lucia.invalidateSession(locals.session.id);
+
+		const sessionCookie = lucia.createBlankSessionCookie();
+
+		cookies.set(sessionCookie.name, sessionCookie.value, {
+			path: '.',
+			...sessionCookie.attributes
 		});
 
 		throw redirect(303, route('/auth/login'));
