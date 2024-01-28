@@ -13,4 +13,4 @@ ztodo.md
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-databaseStorage/*
+localDB/*
