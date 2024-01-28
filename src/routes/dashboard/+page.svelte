@@ -9,7 +9,7 @@
 </script>
 
 <h1 class="mb-5 text-2xl">
-	Hello <span class="font-bold">{data.loggedOnUserName}</span>
+	Hello <span class="font-bold">{data.loggedInUserName}</span>
 </h1>
 
 <form method="post" action={route('logout /dashboard')}>

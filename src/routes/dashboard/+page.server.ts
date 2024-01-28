@@ -19,7 +19,7 @@ export const load = (async ({ locals: { user }, cookies }) => {
 	}
 
 	return {
-		loggedOnUserName: await getUserName(user.id)
+		loggedInUserName: await getUserName(user.id)
 	};
 }) satisfies PageServerLoad;
 
