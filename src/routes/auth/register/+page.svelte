@@ -33,7 +33,7 @@
 	});
 </script>
 
-<h1 class="mb-6 text-2xl font-bold">Register</h1>
+<h1 class="mb-6 text-2xl font-bold leading-none">Register</h1>
 
 <form method="post" use:enhance class="space-y-4" action={route('registerUser /auth/register')}>
 	<InputField
