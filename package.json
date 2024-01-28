@@ -1,5 +1,5 @@
 {
-	"name": "sveltekit-lucia-auth-example",
+	"name": "sveltekit-lucia-auth-v3-example",
 	"version": "0.0.1",
 	"packageManager": "pnpm@8.14.0",
 	"scripts": {
