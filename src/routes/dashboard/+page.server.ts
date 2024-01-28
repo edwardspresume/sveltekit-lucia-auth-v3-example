@@ -43,9 +43,11 @@ export const actions: Actions = {
 	deleteAllUsers: async ({ locals, cookies }) => {
 		if (!locals.session?.id) return;
 
-		await lucia.invalidateSession(locals.session.id);
+		const allUsers = await getAllUsers();
 
-		await lucia.invalidateUserSessions(locals.session.userId);
+		for (const user of allUsers) {
+			await lucia.invalidateUserSessions(user.id);
+		}
 
 		const sessionCookie = lucia.createBlankSessionCookie();
 
