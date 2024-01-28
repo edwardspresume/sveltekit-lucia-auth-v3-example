@@ -2,16 +2,12 @@ import type { LayoutServerLoad } from './$types';
 
 import { loadFlash } from 'sveltekit-flash-message/server';
 
-import { SESSION_COOKIE_NAME } from '$lib/constants';
 import { createBaseMetaTags } from '$lib/utils/metaTags';
 
-export const load = loadFlash(async ({ url, cookies }) => {
+export const load = loadFlash(async ({ url, locals: { session } }) => {
 	const baseMetaTags = createBaseMetaTags(url);
-
-	const session = cookies.get(SESSION_COOKIE_NAME);
-
 	return {
-		session,
+		isLoggedIn: session !== null,
 		baseMetaTags: Object.freeze(baseMetaTags)
 	};
 }) satisfies LayoutServerLoad;
