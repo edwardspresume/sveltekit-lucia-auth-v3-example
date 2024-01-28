@@ -1,21 +1,18 @@
-import {  SESSION_COOKIE_NAME } from '$lib/constants';
+import { redirect } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
+
+import { eq } from 'drizzle-orm';
+import { Argon2id } from 'oslo/password';
+import { message, setError, superValidate } from 'sveltekit-superforms/server';
+
+import { lucia } from '$lib/database/auth.server';
 import { database } from '$lib/database/database.server';
 import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
-import { UserLoginZodSchema } from '$validations/UserLoginZodSchema';
-import { redirect } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
-import { message, setError, superValidate } from 'sveltekit-superforms/server';
-import type { Actions, PageServerLoad } from './$types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
+import { UserLoginZodSchema } from '$validations/UserLoginZodSchema';
 
-export const load = (async ({ cookies }) => {
-	const session = cookies.get(SESSION_COOKIE_NAME);
-
-	if (session) {
-		throw redirect(307, DASHBOARD_ROUTE);
-	}
-
+export const load = (async () => {
 	return {
 		userLoginFormData: await superValidate(UserLoginZodSchema)
 	};
@@ -36,7 +33,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const [user] = await database
+		const [existingUser] = await database
 			.select({
 				id: usersTable.id,
 				password: usersTable.password
@@ -44,16 +41,25 @@ export const actions: Actions = {
 			.from(usersTable)
 			.where(eq(usersTable.email, userLoginFormData.data.email));
 
-		if (user === undefined) {
+		if (existingUser === undefined) {
 			return setError(userLoginFormData, 'email', 'Email not registered');
 		}
 
-		if (user.password !== userLoginFormData.data.password) {
+		const validPassword = await new Argon2id().verify(
+			existingUser.password,
+			userLoginFormData.data.password
+		);
+
+		if (!validPassword) {
 			return setError(userLoginFormData, 'password', 'Incorrect password');
 		}
 
-		cookies.set(SESSION_COOKIE_NAME, user.id, {
-			path: '/'
+		const session = await lucia.createSession(existingUser.id, {});
+		const sessionCookie = lucia.createSessionCookie(session.id);
+
+		cookies.set(sessionCookie.name, sessionCookie.value, {
+			path: '.',
+			...sessionCookie.attributes
 		});
 
 		throw redirect(307, DASHBOARD_ROUTE);
