@@ -1,12 +1,9 @@
 <script lang="ts">
-	import { dev } from '$app/environment';
 	import { page } from '$app/stores';
 
 	import { getFlash } from 'sveltekit-flash-message';
 
 	import { toast } from 'svelte-sonner';
-
-	import { inject } from '@vercel/analytics';
 
 	import { Toaster } from '$components/ui/sonner';
 	import { Bar } from '@bobbymannino/svelte-progress';
@@ -27,8 +24,6 @@
 	$: if ($flash) {
 		toast.info($flash.message);
 	}
-
-	inject({ mode: dev ? 'development' : 'production' });
 
 	setupViewTransition();
 
