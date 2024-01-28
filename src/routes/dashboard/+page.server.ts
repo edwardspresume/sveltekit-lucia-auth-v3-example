@@ -2,14 +2,14 @@ import type { Actions, PageServerLoad } from './$types';
 
 import { redirect } from 'sveltekit-flash-message/server';
 
-import { route } from '$lib/ROUTES';
 import { lucia } from '$lib/database/auth.server';
 import { deleteAllUsers, getAllUsers } from '$lib/database/databaseUtils.server';
+import { LOGIN_ROUTE } from '$lib/utils/navLinks';
 
 export const load = (async ({ locals: { user }, cookies }) => {
 	if (!user) {
 		throw redirect(
-			route('/auth/login'),
+			LOGIN_ROUTE,
 			{
 				type: 'error',
 				message: 'You must be logged in to view the dashboard.'
@@ -37,12 +37,10 @@ export const actions: Actions = {
 			...sessionCookie.attributes
 		});
 
-		throw redirect(303, route('/auth/login'));
+		throw redirect(303, LOGIN_ROUTE);
 	},
 
-	deleteAllUsers: async ({ locals, cookies }) => {
-		if (!locals.session?.id) return;
-
+	deleteAllUsers: async ({ cookies }) => {
 		const allUsers = await getAllUsers();
 
 		for (const user of allUsers) {
@@ -58,6 +56,6 @@ export const actions: Actions = {
 
 		await deleteAllUsers();
 
-		throw redirect(303, route('/auth/login'));
+		throw redirect(303, LOGIN_ROUTE);
 	}
 };
