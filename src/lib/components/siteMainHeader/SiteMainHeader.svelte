@@ -9,7 +9,9 @@
 
 <header class="relative mb-10 border-b">
 	<div class="container flex items-center justify-between p-2">
-		<Button href={route('/')} variant="link" class="p-0 text-2xl font-bold">Logo</Button>
+		<Button href={route('/')} variant="link" class="p-0 text-2xl font-bold"
+			>Lucia Auth Example</Button
+		>
 
 		<div class="flex gap-2">
 			<SiteMainNav />
