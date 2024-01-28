@@ -1,7 +1,7 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
 import { lucia } from '$lib/database/auth.server';
-import { route } from '$lib/ROUTES';
+import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionId = event.cookies.get(lucia.sessionCookieName);
@@ -14,8 +14,8 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	const { session, user } = await lucia.validateSession(sessionId);
 
-	if (session && !event.url.pathname.startsWith('/dashboard') && event.url.pathname !== '/') {
-		throw redirect(303, route('/dashboard'));
+	if (session && !event.url.pathname.startsWith(DASHBOARD_ROUTE) && event.url.pathname !== '/') {
+		throw redirect(303, DASHBOARD_ROUTE);
 	}
 
 	if (session?.fresh) {

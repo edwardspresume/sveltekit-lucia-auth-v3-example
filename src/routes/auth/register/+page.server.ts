@@ -7,10 +7,10 @@ import { lucia } from '$lib/database/auth.server';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 
-import { route } from '$lib/ROUTES';
 import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.server';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
+import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { RegisterUserZodSchema } from '$validations/RegisterUserZodSchema';
 
 export const load = (async () => {
@@ -66,6 +66,6 @@ export const actions: Actions = {
 			});
 		}
 
-		throw redirect(303, route('/dashboard'));
+		throw redirect(303, DASHBOARD_ROUTE);
 	}
 };
