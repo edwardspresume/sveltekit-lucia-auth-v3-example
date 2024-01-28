@@ -8,6 +8,13 @@
       "when": 1705527552675,
       "tag": "0000_broad_cassandra_nova",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1706454286612,
+      "tag": "0001_chilly_frog_thor",
+      "breakpoints": true
     }
   ]
 }
