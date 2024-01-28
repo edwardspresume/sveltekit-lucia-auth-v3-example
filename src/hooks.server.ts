@@ -1,6 +1,7 @@
-import type { Handle } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 
 import { lucia } from '$lib/database/auth.server';
+import { route } from '$lib/ROUTES';
 
 export const handle: Handle = async ({ event, resolve }) => {
 	const sessionId = event.cookies.get(lucia.sessionCookieName);
@@ -12,6 +13,10 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const { session, user } = await lucia.validateSession(sessionId);
+
+	if (session && !event.url.pathname.startsWith('/dashboard')) {
+		throw redirect(303, route('/dashboard'));
+	}
 
 	if (session?.fresh) {
 		const sessionCookie = lucia.createSessionCookie(session.id);
