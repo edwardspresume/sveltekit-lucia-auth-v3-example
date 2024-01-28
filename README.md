@@ -1,3 +1,3 @@
-# Local DB with basic auth example
+# Lucia V3 - Example Project
 
-This project demonstrates how to set up a local database using SQLite and implement basic authentication using cookies.
+This project demonstrates how to set up a SvelteKit application with Lucia V3 for authentication. It uses a local SQLite database for storing user data.
