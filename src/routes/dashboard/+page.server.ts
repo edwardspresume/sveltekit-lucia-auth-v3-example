@@ -4,7 +4,6 @@ import { redirect } from 'sveltekit-flash-message/server';
 
 import { route } from '$lib/ROUTES';
 import { lucia } from '$lib/database/auth.server';
-import { getUserName } from '$lib/database/databaseUtils.server';
 
 export const load = (async ({ locals: { user }, cookies }) => {
 	if (!user) {
@@ -19,7 +18,7 @@ export const load = (async ({ locals: { user }, cookies }) => {
 	}
 
 	return {
-		loggedInUserName: await getUserName(user.id)
+		loggedInUserName: user.name
 	};
 }) satisfies PageServerLoad;
 
