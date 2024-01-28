@@ -1,8 +1,4 @@
 <script lang="ts">
-	import type { LayoutData } from './$types';
-
-	export let data: LayoutData;
-
 	import authImg from '$lib/assets/auth_image.jpg?enhanced';
 </script>
 
