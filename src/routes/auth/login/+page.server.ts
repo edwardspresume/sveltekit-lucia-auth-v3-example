@@ -19,7 +19,7 @@ export const load = (async () => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	default: async ({ request, cookies }) => {
+	logInUser: async ({ request, cookies }) => {
 		const userLoginFormData = await superValidate<typeof UserLoginZodSchema, AlertMessageType>(
 			request,
 			UserLoginZodSchema
