@@ -1,36 +1,26 @@
+import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
-import {
-	checkIfEmailExists,
-	deleteAllUsers,
-	getAllUsers,
-	insertNewUser
-} from '$lib/database/databaseUtils.server';
+import { lucia } from '$lib/database/auth.server';
+import { generateId } from 'lucia';
+import { Argon2id } from 'oslo/password';
+
+import { route } from '$lib/ROUTES';
+import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.server';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { RegisterUserZodSchema } from '$validations/RegisterUserZodSchema';
-import { SESSION_COOKIE_NAME } from '$lib/constants';
 
 export const load = (async () => {
 	return {
-		registerUserFormData: await superValidate(RegisterUserZodSchema),
-
-		allUsers: await getAllUsers()
+		registerUserFormData: await superValidate(RegisterUserZodSchema)
 	};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	deleteAllUsers: async ({ cookies }) => {
-		await deleteAllUsers();
-
-		cookies.delete(SESSION_COOKIE_NAME, {
-			path: '/'
-		});
-	},
-
-	registerUser: async ({ request }) => {
+	registerUser: async ({ request, cookies }) => {
 		const registerUserFormData = await superValidate<
 			typeof RegisterUserZodSchema,
 			AlertMessageType
@@ -39,7 +29,7 @@ export const actions: Actions = {
 		if (registerUserFormData.valid === false) {
 			return message(registerUserFormData, {
 				alertType: 'error',
-				alertText: 'There was a problem with your submission.'
+				alertText: 'Please check your entries, the form contains invalid data'
 			});
 		}
 
@@ -50,23 +40,32 @@ export const actions: Actions = {
 				return setError(registerUserFormData, 'email', 'Email already registered');
 			}
 
+			const userId = generateId(15);
+			const hashedPassword = await new Argon2id().hash(registerUserFormData.data.password);
+
 			await insertNewUser({
+				id: userId,
 				name: registerUserFormData.data.name,
 				email: registerUserFormData.data.email,
-				password: registerUserFormData.data.password
+				password: hashedPassword
 			});
 
-			return message(registerUserFormData, {
-				alertType: 'success',
-				alertText: 'User registered successfully.'
+			const session = await lucia.createSession(userId, {});
+			const sessionCookie = lucia.createSessionCookie(session.id);
+
+			cookies.set(sessionCookie.name, sessionCookie.value, {
+				path: '.',
+				...sessionCookie.attributes
 			});
 		} catch (error) {
 			logError(error);
 
 			return message(registerUserFormData, {
 				alertType: 'error',
-				alertText: 'There was an error with your submission'
+				alertText: 'An error occurred while processing your request. Please try again.'
 			});
 		}
+
+		throw redirect(303, route('/dashboard'));
 	}
 };
