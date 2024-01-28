@@ -1,11 +1,3 @@
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
-
-const window = new JSDOM('').window;
-const DOMPurifyInstance = DOMPurify(window);
-
-export const sanitizeContent = DOMPurifyInstance.sanitize;
-
 export function logError(
 	error: unknown,
 	context = 'General context',
