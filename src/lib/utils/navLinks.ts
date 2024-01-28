@@ -47,3 +47,6 @@ export const mainNavLinks = {
 		ariaLabel: 'Go to register page'
 	})
 } as const;
+
+
+export const DASHBOARD_ROUTE = mainNavLinks.dashboard.href;

@@ -1,4 +1,4 @@
-import { DASHBOARD_ROUTE, SESSION_COOKIE_NAME } from '$lib/constants';
+import {  SESSION_COOKIE_NAME } from '$lib/constants';
 import { database } from '$lib/database/database.server';
 import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
@@ -7,6 +7,7 @@ import { redirect } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 import type { Actions, PageServerLoad } from './$types';
+import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 
 export const load = (async ({ cookies }) => {
 	const session = cookies.get(SESSION_COOKIE_NAME);
