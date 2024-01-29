@@ -37,7 +37,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	// Redirect to the dashboard only if the session is valid and the request isn't for the dashboard or the home page
-	if (event.url.pathname !== DASHBOARD_ROUTE && event.url.pathname !== '/') {
+	if (session && event.url.pathname !== DASHBOARD_ROUTE && event.url.pathname !== '/') {
 		throw redirect(303, DASHBOARD_ROUTE);
 	}
 
