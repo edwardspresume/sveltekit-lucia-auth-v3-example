@@ -60,6 +60,7 @@
 		"bits-ui": "^0.9.9",
 		"clsx": "^2.1.0",
 		"dompurify": "^3.0.8",
+		"dotenv": "^16.4.1",
 		"drizzle-orm": "^0.29.3",
 		"drizzle-zod": "^0.5.1",
 		"just-extend": "^6.2.0",
