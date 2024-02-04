@@ -1,5 +1,6 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
+import { route } from '$lib/ROUTES';
 import { lucia } from '$lib/database/auth.server';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 
@@ -36,8 +37,11 @@ export const handle: Handle = async ({ event, resolve }) => {
 		});
 	}
 
-	// Redirect to the dashboard only if the session is valid and the request isn't for the dashboard or the home page
-	if (session && event.url.pathname !== DASHBOARD_ROUTE && event.url.pathname !== '/') {
+	// List of AUTH routes
+	const AUTH_ROUTES = [route('/auth/login'), route('/auth/register')];
+
+	// If a logged-in user tries to access the login or register page, redirect them to the dashboard.
+	if (session && AUTH_ROUTES.includes(event.url.pathname)) {
 		throw redirect(303, DASHBOARD_ROUTE);
 	}
 
