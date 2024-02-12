@@ -5,7 +5,12 @@
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import { route } from '$lib/ROUTES';
-	import { MAX_NAME_LENGTH, RegisterUserZodSchema } from '$validations/AuthZodSchemas';
+	import {
+		MAX_EMAIL_LENGTH,
+		MAX_NAME_LENGTH,
+		MAX_PASSWORD_LENGTH,
+		RegisterUserZodSchema
+	} from '$validations/AuthZodSchemas';
 
 	import InputField from '$components/form/InputField.svelte';
 	import SubmitButton from '$components/form/SubmitButton.svelte';
@@ -51,6 +56,7 @@
 		label="Email"
 		bind:value={$form.email}
 		errorMessage={$errors.email}
+		maxlength={MAX_EMAIL_LENGTH}
 	/>
 
 	<InputField
@@ -59,6 +65,7 @@
 		label="Password"
 		bind:value={$form.password}
 		errorMessage={$errors.password}
+		maxlength={MAX_PASSWORD_LENGTH}
 	/>
 
 	<SubmitButton />

@@ -10,7 +10,7 @@ import { database } from '$lib/database/database.server';
 import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
-import { UserLoginZodSchema } from '$validations/UserLoginZodSchema';
+import { UserLoginZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async () => {
 	return {
