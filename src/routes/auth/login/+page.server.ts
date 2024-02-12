@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
-import { lucia } from '$lib/database/auth.server';
+import { lucia } from '$lib/database/luciaAuth.server';
 import { createAndSetSession } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { usersTable } from '$lib/database/schema';

@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 import { redirect } from 'sveltekit-flash-message/server';
 
 import { route } from '$lib/ROUTES';
-import { lucia } from '$lib/database/auth.server';
+import { lucia } from '$lib/database/luciaAuth.server';
 import { deleteSessionCookie } from '$lib/database/authUtils.server';
 import { deleteAllUsers, getAllUsers } from '$lib/database/databaseUtils.server';
 import { LOGIN_ROUTE } from '$lib/utils/navLinks';

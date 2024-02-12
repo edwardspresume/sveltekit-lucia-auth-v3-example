@@ -3,7 +3,7 @@ import type { Actions, PageServerLoad } from './$types';
 
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
-import { lucia } from '$lib/database/auth.server';
+import { lucia } from '$lib/database/luciaAuth.server';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 
