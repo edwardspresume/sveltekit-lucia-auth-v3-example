@@ -11,7 +11,7 @@ declare global {
 		}
 		interface PageData {
 			pageMetaTags?: MetaTagsProps;
-			isLoggedIn: boolean;
+			isUserLoggedIn: boolean;
 			flash?: { type: 'success' | 'error'; message: string };
 		}
 		// interface PageState {}

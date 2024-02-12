@@ -39,7 +39,7 @@
 		register: mainNavLinks.register
 	};
 
-	$: isLoggedIn = $page.data.isLoggedIn;
+	$: isUserLoggedIn = $page.data.isUserLoggedIn;
 </script>
 
 <nav
@@ -48,7 +48,7 @@
 	class={cn(staticClasses, dynamicClasses, className)}
 >
 	<ul class="grid gap-5 *:*:w-full sm:flex sm:gap-2">
-		{#each Object.values(isLoggedIn ? sessionLinks : noneSessionLinks) as link}
+		{#each Object.values(isUserLoggedIn ? sessionLinks : noneSessionLinks) as link}
 			{@const isCurrentPage = $page.url.pathname === link.href ? 'page' : undefined}
 
 			<li>

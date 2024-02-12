@@ -6,8 +6,9 @@ import { createBaseMetaTags } from '$lib/utils/metaTags';
 
 export const load = loadFlash(async ({ url, locals: { session } }) => {
 	const baseMetaTags = createBaseMetaTags(url);
+
 	return {
-		isLoggedIn: session !== null,
+		isUserLoggedIn: session !== null,
 		baseMetaTags: Object.freeze(baseMetaTags)
 	};
 }) satisfies LayoutServerLoad;
