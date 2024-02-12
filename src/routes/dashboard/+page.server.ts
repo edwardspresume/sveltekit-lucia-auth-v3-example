@@ -4,6 +4,7 @@ import { redirect } from 'sveltekit-flash-message/server';
 
 import { route } from '$lib/ROUTES';
 import { lucia } from '$lib/database/auth.server';
+import { deleteSessionCookie } from '$lib/database/authUtils.server';
 import { deleteAllUsers, getAllUsers } from '$lib/database/databaseUtils.server';
 import { LOGIN_ROUTE } from '$lib/utils/navLinks';
 
@@ -31,12 +32,7 @@ export const actions: Actions = {
 
 		await lucia.invalidateSession(locals.session.id);
 
-		const sessionCookie = lucia.createBlankSessionCookie();
-
-		cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
+		await deleteSessionCookie(lucia, cookies);
 
 		throw redirect(303, LOGIN_ROUTE);
 	},
@@ -48,12 +44,7 @@ export const actions: Actions = {
 			await lucia.invalidateUserSessions(user.id);
 		}
 
-		const sessionCookie = lucia.createBlankSessionCookie();
-
-		cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
+		await deleteSessionCookie(lucia, cookies);
 
 		await deleteAllUsers();
 
