@@ -49,4 +49,7 @@ export const mainNavLinks = {
 } as const;
 
 export const LOGIN_ROUTE = mainNavLinks.login.href;
+export const REGISTER_ROUTE = mainNavLinks.register.href;
 export const DASHBOARD_ROUTE = mainNavLinks.dashboard.href;
+
+export const AUTH_ROUTES = [LOGIN_ROUTE, REGISTER_ROUTE];
