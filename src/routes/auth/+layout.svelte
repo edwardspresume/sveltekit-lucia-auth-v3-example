@@ -2,8 +2,8 @@
 	import { page } from '$app/stores';
 	import { route } from '$lib/ROUTES';
 
-	import loginPageImgSrc from '$lib/assets/login_page.jpg?enhanced';
-	import registerPageImgSrc from '$lib/assets/register_page.jpg?enhanced';
+	import loginPageImgSrc from '$assets/login_page.jpg?enhanced';
+	import registerPageImgSrc from '$assets/register_page.jpg?enhanced';
 
 	const images = {
 		[route('/auth/login')]: {
