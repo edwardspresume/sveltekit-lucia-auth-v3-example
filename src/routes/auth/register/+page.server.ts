@@ -7,6 +7,7 @@ import { lucia } from '$lib/database/auth.server';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 
+import { createAndSetSession } from '$lib/database/authUtils.server';
 import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.server';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
@@ -50,13 +51,7 @@ export const actions: Actions = {
 				password: hashedPassword
 			});
 
-			const session = await lucia.createSession(userId, {});
-			const sessionCookie = lucia.createSessionCookie(session.id);
-
-			cookies.set(sessionCookie.name, sessionCookie.value, {
-				path: '.',
-				...sessionCookie.attributes
-			});
+			await createAndSetSession(lucia, userId, cookies);
 		} catch (error) {
 			logError(error);
 

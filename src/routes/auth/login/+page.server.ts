@@ -6,6 +6,7 @@ import { Argon2id } from 'oslo/password';
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
 import { lucia } from '$lib/database/auth.server';
+import { createAndSetSession } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
@@ -54,13 +55,7 @@ export const actions: Actions = {
 			return setError(userLoginFormData, 'password', 'Incorrect password');
 		}
 
-		const session = await lucia.createSession(existingUser.id, {});
-		const sessionCookie = lucia.createSessionCookie(session.id);
-
-		cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
+		await createAndSetSession(lucia, existingUser.id, cookies);
 
 		throw redirect(307, DASHBOARD_ROUTE);
 	}
