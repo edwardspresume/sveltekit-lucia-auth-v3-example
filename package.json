@@ -69,6 +69,7 @@
 		"mode-watcher": "^0.1.2",
 		"oslo": "^1.1.0",
 		"postcss-preset-env": "^9.3.0",
+		"resend": "^3.1.0",
 		"svelte-sonner": "^0.3.17",
 		"tailwind-merge": "^2.2.1",
 		"tailwind-variants": "^0.1.20",
