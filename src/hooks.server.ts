@@ -1,6 +1,7 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
 import { lucia } from '$lib/database/auth.server';
+import { deleteSessionCookie } from '$lib/database/authUtils.server';
 import { AUTH_ROUTES, DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 
 export const handle: Handle = async ({ event, resolve }) => {
@@ -30,13 +31,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 	// If the session is invalid, generate a blank session cookie to remove the existing session cookie from the browser
 	if (!session) {
-		const sessionCookie = lucia.createBlankSessionCookie();
-
-		// Set the blank session cookie in the browser
-		event.cookies.set(sessionCookie.name, sessionCookie.value, {
-			path: '.',
-			...sessionCookie.attributes
-		});
+		await deleteSessionCookie(lucia, event.cookies);
 	}
 
 	// If a user is logged in and attempts to access the login or register page, redirect them to the dashboard
