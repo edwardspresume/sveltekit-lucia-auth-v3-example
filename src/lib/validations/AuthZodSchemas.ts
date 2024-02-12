@@ -1,4 +1,5 @@
 import { createInsertSchema } from 'drizzle-zod';
+import { z } from 'zod';
 
 import { usersTable } from '$lib/database/schema';
 
@@ -15,6 +16,9 @@ export const MAX_PASSWORD_LENGTH = 128;
 export const PASSWORD_MIN_ERROR_MESSAGE = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`;
 export const PASSWORD_MAX_ERROR_MESSAGE = `Password must be less than ${MAX_PASSWORD_LENGTH} characters long`;
 
+export const EMAIL_VERIFICATION_CODE_LENGTH = 8;
+export const PENDING_USER_VERIFICATION_COOKIE_NAME = 'pendingUserVerification';
+
 export const RegisterUserZodSchema = createInsertSchema(usersTable, {
 	name: (schema) =>
 		schema.name
@@ -30,3 +34,7 @@ export const RegisterUserZodSchema = createInsertSchema(usersTable, {
 });
 
 export const UserLoginZodSchema = RegisterUserZodSchema.pick({ email: true, password: true });
+
+export const EmailVerificationCodeZodSchema = z.object({
+	verificationCode: z.string().length(EMAIL_VERIFICATION_CODE_LENGTH)
+});
