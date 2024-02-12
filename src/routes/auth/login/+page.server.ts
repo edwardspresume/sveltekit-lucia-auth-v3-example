@@ -57,6 +57,6 @@ export const actions: Actions = {
 
 		await createAndSetSession(lucia, existingUser.id, cookies);
 
-		throw redirect(307, DASHBOARD_ROUTE);
+		throw redirect(303, DASHBOARD_ROUTE);
 	}
 };
