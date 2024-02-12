@@ -20,7 +20,7 @@
 		class="hidden rounded shadow-md md:block"
 	/>
 
-	<section>
+	<section class="md:max-w-xl">
 		<slot />
 	</section>
 </div>
