@@ -32,14 +32,3 @@ export const getAllUsers = async () => {
 export const deleteAllUsers = async () => {
 	return await database.delete(usersTable);
 };
-
-export const getUserName = async (userId: string) => {
-	const queryResult = await database
-		.select({
-			name: usersTable.name
-		})
-		.from(usersTable)
-		.where(eq(usersTable.id, userId));
-
-	return queryResult[0]?.name;
-};
