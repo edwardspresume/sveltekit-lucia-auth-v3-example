@@ -26,11 +26,9 @@ export const lucia = new Lucia(dbAdapter, {
 declare module 'lucia' {
 	interface Register {
 		Lucia: typeof lucia;
-		DatabaseUserAttributes: DatabaseUserAttributes;
+		DatabaseUserAttributes: {
+			name: string;
+			email: string;
+		};
 	}
 }
-
-type DatabaseUserAttributes = {
-	name: string;
-	email: string;
-};
