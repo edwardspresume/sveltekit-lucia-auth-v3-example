@@ -15,6 +15,13 @@
       "when": 1706454286612,
       "tag": "0001_chilly_frog_thor",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1707771413098,
+      "tag": "0002_eager_bulldozer",
+      "breakpoints": true
     }
   ]
 }
