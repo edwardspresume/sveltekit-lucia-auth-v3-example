@@ -11,7 +11,7 @@ import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.s
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
-import { RegisterUserZodSchema } from '$validations/RegisterUserZodSchema';
+import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async () => {
 	return {
