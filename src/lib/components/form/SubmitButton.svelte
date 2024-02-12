@@ -9,14 +9,16 @@
 
 	export { className as class };
 	export let disabled: boolean = false;
+	export let formaction: string | null = null;
 	export let showSpinner: boolean | null = null;
 </script>
 
 <Button
 	{disabled}
+	{formaction}
 	type="submit"
 	aria-disabled={disabled}
-	class={cn('gap-2 text-xl font-medium', className)}
+	class={cn('gap-2 font-bold', className)}
 >
 	{#if showSpinner === null ? disabled : showSpinner}
 		<iconify-icon icon="eos-icons:bubble-loading"></iconify-icon>
