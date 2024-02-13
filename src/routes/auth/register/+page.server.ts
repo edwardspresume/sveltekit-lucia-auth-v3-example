@@ -3,16 +3,22 @@ import type { Actions, PageServerLoad } from './$types';
 
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
-import { lucia } from '$lib/database/luciaAuth.server';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 
-import { createAndSetSession } from '$lib/database/authUtils.server';
+import { route } from '$lib/ROUTES';
+import {
+	generateEmailVerificationCode,
+	sendEmailVerificationCode
+} from '$lib/database/authUtils.server';
 import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.server';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
-import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
+import {
+	PENDING_USER_VERIFICATION_COOKIE_NAME,
+	RegisterUserZodSchema
+} from '$validations/AuthZodSchemas';
 
 export const load = (async () => {
 	return {
@@ -42,16 +48,26 @@ export const actions: Actions = {
 			}
 
 			const userId = generateId(15);
+			const userEmail = registerUserFormData.data.email;
 			const hashedPassword = await new Argon2id().hash(registerUserFormData.data.password);
 
 			await insertNewUser({
 				id: userId,
 				name: registerUserFormData.data.name,
-				email: registerUserFormData.data.email,
+				email: userEmail,
+				isEmailVerified: false,
 				password: hashedPassword
 			});
 
-			await createAndSetSession(lucia, userId, cookies);
+			const emailVerificationCode = await generateEmailVerificationCode(userId, userEmail);
+
+			await sendEmailVerificationCode(userEmail, emailVerificationCode);
+
+			const pendingVerificationUserData = JSON.stringify({ id: userId, email: userEmail });
+
+			cookies.set(PENDING_USER_VERIFICATION_COOKIE_NAME, pendingVerificationUserData, {
+				path: route('/auth/email-verification')
+			});
 		} catch (error) {
 			logError(error);
 
