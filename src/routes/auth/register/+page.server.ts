@@ -15,7 +15,6 @@ import {
 import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.server';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
-import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async () => {
@@ -75,6 +74,6 @@ export const actions: Actions = {
 			});
 		}
 
-		throw redirect(303, DASHBOARD_ROUTE);
+		throw redirect(303, route('/auth/email-verification'));
 	}
 };
