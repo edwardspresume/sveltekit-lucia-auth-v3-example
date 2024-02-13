@@ -5,9 +5,9 @@ import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
-import { lucia } from '$lib/database/auth.server';
 import { createAndSetSession } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
+import { lucia } from '$lib/database/luciaAuth.server';
 import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
