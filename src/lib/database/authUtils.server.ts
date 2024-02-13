@@ -43,10 +43,12 @@ export const generateEmailVerificationCode = async (userId: string, email: strin
 
 	// This transaction block ensures atomicity and data integrity. If an error occurs while inserting the new code, the transaction will be rolled back, preventing the deletion of old verification codes. This maintains the state of the database.
 	await database.transaction(async (trx) => {
+		// Delete any existing verification codes for the user
 		await trx
 			.delete(emailVerificationCodesTable)
 			.where(eq(emailVerificationCodesTable.userId, userId));
 
+		// Insert the new verification code
 		await trx.insert(emailVerificationCodesTable).values({
 			userId: userId,
 			email,
