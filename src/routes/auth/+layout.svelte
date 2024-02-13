@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { route } from '$lib/ROUTES';
 
+	import emailVerificationPageImgSrc from '$assets/email_verification_page.jpg?enhanced';
 	import loginPageImgSrc from '$assets/login_page.jpg?enhanced';
 	import registerPageImgSrc from '$assets/register_page.jpg?enhanced';
 
@@ -14,6 +15,11 @@
 		[route('/auth/register')]: {
 			src: registerPageImgSrc,
 			alt: 'A register page image'
+		},
+
+		[route('/auth/email-verification')]: {
+			src: emailVerificationPageImgSrc,
+			alt: 'An email verification page image'
 		}
 	};
 
