@@ -14,6 +14,10 @@ import { emailVerificationCodesTable } from './schema';
 const resend = new Resend(RESEND_API_KEY);
 
 export const PENDING_USER_VERIFICATION_COOKIE_NAME = 'pendingUserVerification';
+export type PendingVerificationUserDataType = {
+	id: string;
+	email: string;
+};
 
 export const createAndSetSession = async (lucia: Lucia, userId: string, cookies: Cookies) => {
 	const session = await lucia.createSession(userId, {});
