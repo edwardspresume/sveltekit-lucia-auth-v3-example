@@ -70,7 +70,10 @@ export const sendEmailVerificationCode = async (email: string, code: string) => 
 
 	if (error) {
 		console.error({ error });
+		return { success: false, message: 'Failed to send email verification code.' };
 	}
+
+	return { success: true, message: 'Email verification code sent successfully.' };
 };
 
 export const verifyEmailVerificationCode = async (userId: string, code: string) => {

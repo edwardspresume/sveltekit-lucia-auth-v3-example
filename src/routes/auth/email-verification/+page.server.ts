@@ -93,7 +93,17 @@ export const actions: Actions = {
 
 		const emailVerificationCode = await generateEmailVerificationCode(userData.id, userData.email);
 
-		await sendEmailVerificationCode(userData.email, emailVerificationCode);
+		const { success, message } = await sendEmailVerificationCode(
+			userData.email,
+			emailVerificationCode
+		);
+
+		if (!success) {
+			return {
+				error: true,
+				message: message
+			};
+		}
 
 		return {
 			message: 'A new verification code has been sent to your email'

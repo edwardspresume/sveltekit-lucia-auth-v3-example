@@ -60,6 +60,18 @@ export const actions: Actions = {
 
 			await sendEmailVerificationCode(userEmail, emailVerificationCode);
 
+			const sendEmailVerificationCodeResult = await sendEmailVerificationCode(
+				userEmail,
+				emailVerificationCode
+			);
+
+			if (!sendEmailVerificationCodeResult.success) {
+				return message(registerUserFormData, {
+					alertType: 'error',
+					alertText: sendEmailVerificationCodeResult.message
+				});
+			}
+
 			const pendingVerificationUserData = JSON.stringify({ id: userId, email: userEmail });
 
 			cookies.set(PENDING_USER_VERIFICATION_COOKIE_NAME, pendingVerificationUserData, {
