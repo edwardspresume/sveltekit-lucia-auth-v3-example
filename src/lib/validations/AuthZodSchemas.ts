@@ -17,7 +17,6 @@ export const PASSWORD_MIN_ERROR_MESSAGE = `Password must be at least ${MIN_PASSW
 export const PASSWORD_MAX_ERROR_MESSAGE = `Password must be less than ${MAX_PASSWORD_LENGTH} characters long`;
 
 export const EMAIL_VERIFICATION_CODE_LENGTH = 8;
-export const PENDING_USER_VERIFICATION_COOKIE_NAME = 'pendingUserVerification';
 
 export const RegisterUserZodSchema = createInsertSchema(usersTable, {
 	name: (schema) =>

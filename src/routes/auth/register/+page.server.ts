@@ -8,6 +8,7 @@ import { Argon2id } from 'oslo/password';
 
 import { route } from '$lib/ROUTES';
 import {
+	PENDING_USER_VERIFICATION_COOKIE_NAME,
 	generateEmailVerificationCode,
 	sendEmailVerificationCode
 } from '$lib/database/authUtils.server';
@@ -15,10 +16,7 @@ import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.s
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
-import {
-	PENDING_USER_VERIFICATION_COOKIE_NAME,
-	RegisterUserZodSchema
-} from '$validations/AuthZodSchemas';
+import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async () => {
 	return {
