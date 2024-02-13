@@ -86,7 +86,7 @@ export const actions: Actions = {
 		throw redirect(303, DASHBOARD_ROUTE);
 	},
 
-	resendCode: async ({ cookies }) => {
+	sendNewCode: async ({ cookies }) => {
 		const userData = getUserDataFromCookie(cookies);
 
 		if (!userData) return redirect(303, route('/auth/register'));

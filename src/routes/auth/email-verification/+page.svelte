@@ -18,7 +18,7 @@
 		errors,
 		message,
 		delayed,
-		enhance: verifyEnhance
+		enhance: verifyCodeEnhance
 	} = superForm(data.emailVerificationCodeFormData, {
 		resetForm: false,
 		taintedMessage: null,
@@ -45,7 +45,7 @@
 </h2>
 
 <form
-	use:verifyEnhance
+	use:verifyCodeEnhance
 	method="post"
 	class="space-y-4"
 	action={route('verifyCode /auth/email-verification')}
@@ -64,13 +64,13 @@
 
 <form
 	method="post"
+	action={route('sendNewCode /auth/email-verification')}
 	use:enhance={() => {
 		return async ({ result }) => {
 			if (result.type === 'success') toast.success(result?.data?.message);
 		};
 	}}
-	action={route('resendCode /auth/email-verification')}
 	class="mt-4"
 >
-	<SubmitButton class="w-full">Resend Code</SubmitButton>
+	<SubmitButton class="w-full">Send New Code</SubmitButton>
 </form>
