@@ -39,17 +39,20 @@ export const deleteSessionCookie = async (lucia: Lucia, cookies: Cookies) => {
 };
 
 export const generateEmailVerificationCode = async (userId: string, email: string) => {
-	await database
-		.delete(emailVerificationCodesTable)
-		.where(eq(emailVerificationCodesTable.userId, userId));
-
 	const code = generateRandomString(EMAIL_VERIFICATION_CODE_LENGTH, alphabet('0-9'));
 
-	await database.insert(emailVerificationCodesTable).values({
-		userId: userId,
-		email,
-		code,
-		expiresAt: createDate(new TimeSpan(5, 'm')) // 5 minutes
+	// This transaction block ensures atomicity and data integrity. If an error occurs while inserting the new code, the transaction will be rolled back, preventing the deletion of old verification codes. This maintains the state of the database.
+	await database.transaction(async (trx) => {
+		await trx
+			.delete(emailVerificationCodesTable)
+			.where(eq(emailVerificationCodesTable.userId, userId));
+
+		await trx.insert(emailVerificationCodesTable).values({
+			userId: userId,
+			email,
+			code,
+			expiresAt: createDate(new TimeSpan(5, 'm')) // 5 minutes
+		});
 	});
 
 	return code;
