@@ -13,7 +13,7 @@ export function createBaseMetaTags(url: URL): MetaTagsProps {
 		canonical: canonicalUrl,
 
 		keywords: [
-			'Basekit',
+			'Lucia',
 			'sveltekit',
 			'svelte',
 			'tailwindcss',
