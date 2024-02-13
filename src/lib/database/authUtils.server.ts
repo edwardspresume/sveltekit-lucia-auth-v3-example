@@ -3,7 +3,7 @@ import type { Cookies } from '@sveltejs/kit';
 
 import { eq } from 'drizzle-orm';
 import { TimeSpan, type Lucia } from 'lucia';
-import { createDate } from 'oslo';
+import { createDate, isWithinExpirationDate } from 'oslo';
 import { alphabet, generateRandomString } from 'oslo/crypto';
 import { Resend } from 'resend';
 
@@ -43,8 +43,54 @@ export const generateEmailVerificationCode = async (userId: string, email: strin
 		userId: userId,
 		email,
 		code,
-		expiresAt: createDate(new TimeSpan(0.2, 'm')) // 5 minutes
+		expiresAt: createDate(new TimeSpan(5, 'm')) // 5 minutes
 	});
 
 	return code;
+};
+
+export const sendEmailVerificationCode = async (email: string, code: string) => {
+	const { error } = await resend.emails.send({
+		from: 'Lucia V3 example <onboarding@resend.dev>',
+		to: [email],
+		subject: 'Email Verification Code',
+		html: `<p>Your email verification code is: <strong>${code}</strong></p>`
+	});
+
+	if (error) {
+		console.error({ error });
+	}
+};
+
+export const verifyEmailVerificationCode = async (userId: string, code: string) => {
+	const [verificationCode] = await database
+		.select()
+		.from(emailVerificationCodesTable)
+		.where(eq(emailVerificationCodesTable.userId, userId));
+
+	// If there's no verification code for the user in the database
+	if (!verificationCode) {
+		return { success: false, message: 'Verification code not found.' };
+	}
+
+	// If the provided code doesn't match the one in the database
+	if (verificationCode.code !== code) {
+		return { success: false, message: 'The provided verification code is incorrect.' };
+	}
+
+	// If the verification code has expired
+	if (!isWithinExpirationDate(verificationCode.expiresAt)) {
+		return {
+			success: false,
+			message: 'The verification code has expired, please request a new one.'
+		};
+	}
+
+	// If everything is okay, delete the verification code from the database
+	await database
+		.delete(emailVerificationCodesTable)
+		.where(eq(emailVerificationCodesTable.userId, userId));
+
+	// Return a success message
+	return { success: true, message: 'Email verification successful!' };
 };
