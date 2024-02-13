@@ -67,7 +67,13 @@
 	action={route('sendNewCode /auth/email-verification')}
 	use:enhance={() => {
 		return async ({ result }) => {
-			if (result.type === 'success') toast.success(result?.data?.message);
+			if (result.type === 'failure') {
+				toast.error(result.data?.message);
+			}
+
+			if (result.type === 'success') {
+				toast.success(result.data?.message);
+			}
 		};
 	}}
 	class="mt-4"

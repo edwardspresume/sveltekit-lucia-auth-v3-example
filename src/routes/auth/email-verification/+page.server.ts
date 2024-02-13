@@ -1,4 +1,4 @@
-import { redirect, type Actions, type Cookies } from '@sveltejs/kit';
+import { fail, redirect, type Actions, type Cookies } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 
 import { message, superValidate } from 'sveltekit-superforms/client';
@@ -93,16 +93,15 @@ export const actions: Actions = {
 
 		const emailVerificationCode = await generateEmailVerificationCode(userData.id, userData.email);
 
-		const { success, message } = await sendEmailVerificationCode(
+		const sendEmailVerificationCodeResult = await sendEmailVerificationCode(
 			userData.email,
 			emailVerificationCode
 		);
 
-		if (!success) {
-			return {
-				error: true,
-				message: message
-			};
+		if (!sendEmailVerificationCodeResult.success) {
+			return fail(500, {
+				message: sendEmailVerificationCodeResult.message
+			});
 		}
 
 		return {
