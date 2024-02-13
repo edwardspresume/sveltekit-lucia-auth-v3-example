@@ -58,8 +58,6 @@ export const actions: Actions = {
 
 			const emailVerificationCode = await generateEmailVerificationCode(userId, userEmail);
 
-			await sendEmailVerificationCode(userEmail, emailVerificationCode);
-
 			const sendEmailVerificationCodeResult = await sendEmailVerificationCode(
 				userEmail,
 				emailVerificationCode
