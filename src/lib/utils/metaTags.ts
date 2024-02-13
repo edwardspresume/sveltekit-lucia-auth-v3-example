@@ -1,8 +1,9 @@
 import type { MetaTagsProps } from 'svelte-meta-tags';
 
 export function createBaseMetaTags(url: URL): MetaTagsProps {
-	const title = 'BaseKit';
-	const description = 'BaseKit is a SvelteKit template with pre-configured tools.';
+	const title = 'Lucia Auth V3 - SvelteKit';
+	const description =
+		'An example of how to use Lucia with SvelteKit to create a simple authentication system.';
 	const canonicalUrl = new URL(url.pathname, url.origin).href;
 
 	return {
