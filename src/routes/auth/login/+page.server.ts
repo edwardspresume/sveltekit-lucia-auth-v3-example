@@ -50,12 +50,12 @@ export const actions: Actions = {
 			return setError(userLoginFormData, 'email', 'Email not registered');
 		}
 
-		const validPassword = await new Argon2id().verify(
+		const isPasswordValid = await new Argon2id().verify(
 			existingUser.password,
 			userLoginFormData.data.password
 		);
 
-		if (!validPassword) {
+		if (!isPasswordValid) {
 			return setError(userLoginFormData, 'password', 'Incorrect password');
 		}
 
