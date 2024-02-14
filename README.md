@@ -16,3 +16,8 @@ This project demonstrates how to set up a SvelteKit application with Lucia V3 fo
    pnpm db:generate
    pnpm db:push
    ```
+
+## Branches
+
+- [Main Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/main)
+- [Email Verification Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/email_verification)
