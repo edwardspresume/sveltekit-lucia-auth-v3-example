@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-import { redirect as flashRedirect } from 'sveltekit-flash-message/server';
+import { redirect as flashMessageRedirect } from 'sveltekit-flash-message/server';
 
 import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
@@ -60,7 +60,7 @@ export const actions: Actions = {
 		}
 
 		if (!existingUser.isEmailVerified) {
-			throw flashRedirect(
+			throw flashMessageRedirect(
 				route('/auth/email-verification'),
 				{
 					type: 'error',
