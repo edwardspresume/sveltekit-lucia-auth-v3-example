@@ -1,13 +1,16 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
+import { redirect as flashRedirect } from 'sveltekit-flash-message/server';
+
 import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
-import { lucia } from '$lib/database/luciaAuth.server';
+import { route } from '$lib/ROUTES';
 import { createAndSetSession } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
+import { lucia } from '$lib/database/luciaAuth.server';
 import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
@@ -37,7 +40,8 @@ export const actions: Actions = {
 		const [existingUser] = await database
 			.select({
 				id: usersTable.id,
-				password: usersTable.password
+				password: usersTable.password,
+				isEmailVerified: usersTable.isEmailVerified
 			})
 			.from(usersTable)
 			.where(eq(usersTable.email, userLoginFormData.data.email));
@@ -53,6 +57,17 @@ export const actions: Actions = {
 
 		if (!validPassword) {
 			return setError(userLoginFormData, 'password', 'Incorrect password');
+		}
+
+		if (!existingUser.isEmailVerified) {
+			throw flashRedirect(
+				route('/auth/email-verification'),
+				{
+					type: 'error',
+					message: 'You must verify your email before logging in.'
+				},
+				cookies
+			);
 		}
 
 		await createAndSetSession(lucia, existingUser.id, cookies);
