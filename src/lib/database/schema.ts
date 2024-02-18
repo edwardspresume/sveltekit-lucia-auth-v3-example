@@ -39,4 +39,13 @@ export const usersSessionsTable = sqliteTable('users_sessions', {
 	expiresAt: integer('expires_at').notNull()
 });
 
+export const passwordResetTokensTable = sqliteTable('password_reset_tokens', {
+	id: text('id').primaryKey().notNull(),
+
+	userId: text('user_id')
+		.notNull()
+		.references(() => usersTable.id),
+
+	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
+});
 export type UserInsertSchema = typeof usersTable.$inferInsert;
