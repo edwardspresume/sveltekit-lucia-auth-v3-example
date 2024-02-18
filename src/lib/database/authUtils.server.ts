@@ -6,6 +6,7 @@ import { TimeSpan, type Lucia } from 'lucia';
 import { createDate, isWithinExpirationDate } from 'oslo';
 import { alphabet, generateRandomString } from 'oslo/crypto';
 import { Resend } from 'resend';
+import { RetryAfterRateLimiter } from 'sveltekit-rate-limiter/server';
 
 import { EMAIL_VERIFICATION_CODE_LENGTH } from '$validations/AuthZodSchemas';
 import { database } from './database.server';
@@ -18,6 +19,40 @@ export type PendingVerificationUserDataType = {
 	id: string;
 	email: string;
 };
+
+function createRateLimiter(cookieName: string, cookieSecret: string) {
+	return new RetryAfterRateLimiter({
+		// A rate is defined as [number, unit]
+		IP: [10, 'h'], // IP address limiter, allowing up to  10 requests per hour
+		IPUA: [5, 'm'], // IP + User Agent limiter, allowing up to  5 requests per minute
+
+		cookie: {
+			/* Cookie limiter. This limits the number of requests from the same browser (identified by a unique cookie) to  2 per minute.
+
+			It helps prevent a single browser session from making too many requests in a short time, providing an extra layer of protection against abuse.
+		*/
+			name: cookieName, // Unique cookie name for this limiter
+			secret: cookieSecret,
+			rate: [2, 'm'], // Allows up to  2 requests per minute from the same browser session
+			preflight: true // Require preflight call (see load function)
+		}
+	});
+}
+
+export const verifyCodeRateLimiter = createRateLimiter(
+	'verifyCodeRateLimiterCookieId',
+	'verifyCodeRateLimiterCookieSecret'
+);
+
+export const sendCodeRateLimiter = createRateLimiter(
+	'sendCodeRateLimiterCookieId',
+	'sendCodeRateLimiterCookieSecret'
+);
+
+export const passwordResetRateLimiter = createRateLimiter(
+	'passwordResetRateLimiterCookieId',
+	'passwordResetRateLimiterCookieSecret'
+);
 
 export const createAndSetSession = async (lucia: Lucia, userId: string, cookies: Cookies) => {
 	const session = await lucia.createSession(userId, {});

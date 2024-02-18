@@ -1,4 +1,5 @@
 import { fail, redirect, type Actions, type Cookies } from '@sveltejs/kit';
+
 import type { PageServerLoad } from './$types';
 
 import { message, superValidate } from 'sveltekit-superforms/client';
@@ -8,7 +9,9 @@ import {
 	PENDING_USER_VERIFICATION_COOKIE_NAME,
 	createAndSetSession,
 	generateEmailVerificationCode,
+	sendCodeRateLimiter,
 	sendEmailVerificationCode,
+	verifyCodeRateLimiter,
 	verifyEmailVerificationCode,
 	type PendingVerificationUserDataType
 } from '$lib/database/authUtils.server';
@@ -29,11 +32,16 @@ const getUserDataFromCookie = (cookies: Cookies) => {
 	return JSON.parse(cookieData) as PendingVerificationUserDataType;
 };
 
-export const load = (async ({ cookies }) => {
-	// Parse the user data from the cookie
-	const userData = getUserDataFromCookie(cookies);
+export const load = (async (event) => {
+	await verifyCodeRateLimiter.cookieLimiter?.preflight(event);
+	await sendCodeRateLimiter.cookieLimiter?.preflight(event);
 
-	if (!userData) return redirect(303, route('/auth/register'));
+	// Parse the user data from the cookie
+	const userData = getUserDataFromCookie(event.cookies);
+
+	if (!userData) {
+		return redirect(303, route('/auth/register'));
+	}
 
 	return {
 		pendingUserEmail: userData.email,
@@ -42,7 +50,9 @@ export const load = (async ({ cookies }) => {
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
-	verifyCode: async ({ request, cookies }) => {
+	verifyCode: async (event) => {
+		const { cookies, request } = event;
+
 		const userData = getUserDataFromCookie(cookies);
 
 		if (!userData) return redirect(303, route('/auth/register'));
@@ -57,6 +67,21 @@ export const actions: Actions = {
 				alertType: 'error',
 				alertText: 'Invalid verification code, please try again'
 			});
+		}
+
+		const sendNewCodeRateLimiterResult = await verifyCodeRateLimiter.check(event);
+
+		if (sendNewCodeRateLimiterResult.limited) {
+			return message(
+				emailVerificationCodeFormData,
+				{
+					alertType: 'error',
+					alertText: `You have made too many requests and exceeded the rate limit. Please try again after ${sendNewCodeRateLimiterResult.retryAfter} seconds.`
+				},
+				{
+					status: 429
+				}
+			);
 		}
 
 		const isVerificationCodeValid = await verifyEmailVerificationCode(
@@ -86,8 +111,16 @@ export const actions: Actions = {
 		throw redirect(303, DASHBOARD_ROUTE);
 	},
 
-	sendNewCode: async ({ cookies }) => {
-		const userData = getUserDataFromCookie(cookies);
+	sendNewCode: async (event) => {
+		const sendNewCodeRateLimiterResult = await sendCodeRateLimiter.check(event);
+
+		if (sendNewCodeRateLimiterResult.limited) {
+			return fail(429, {
+				message: `You have made too many requests and exceeded the rate limit. Please try again after ${sendNewCodeRateLimiterResult.retryAfter} seconds.`
+			});
+		}
+
+		const userData = getUserDataFromCookie(event.cookies);
 
 		if (!userData) return redirect(303, route('/auth/register'));
 
