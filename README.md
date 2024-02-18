@@ -11,7 +11,7 @@ For a guide on how to implement these features, check out the video tutorial ser
 
 ## Prerequisites
 
-- Ensure you have [pnpm](https://pnpm.io/) installed. This project uses `pnpm` as the package manager.
+- [pnpm](https://pnpm.io/) must be installed as this project uses it as the package manager.
 
 ## Setup
 
