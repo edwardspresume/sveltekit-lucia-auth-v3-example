@@ -2,7 +2,7 @@ import { RESEND_API_KEY } from '$env/static/private';
 import type { Cookies } from '@sveltejs/kit';
 
 import { eq } from 'drizzle-orm';
-import { TimeSpan, type Lucia } from 'lucia';
+import { TimeSpan, generateId, type Lucia } from 'lucia';
 import { createDate, isWithinExpirationDate } from 'oslo';
 import { alphabet, generateRandomString } from 'oslo/crypto';
 import { Resend } from 'resend';
@@ -10,7 +10,7 @@ import { RetryAfterRateLimiter } from 'sveltekit-rate-limiter/server';
 
 import { EMAIL_VERIFICATION_CODE_LENGTH } from '$validations/AuthZodSchemas';
 import { database } from './database.server';
-import { emailVerificationCodesTable } from './schema';
+import { emailVerificationCodesTable, passwordResetTokensTable } from './schema';
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -85,7 +85,7 @@ export const generateEmailVerificationCode = async (userId: string, email: strin
 
 		// Insert the new verification code
 		await trx.insert(emailVerificationCodesTable).values({
-			userId: userId,
+			userId,
 			email,
 			code,
 			expiresAt: createDate(new TimeSpan(5, 'm')) // 5 minutes
@@ -142,4 +142,36 @@ export const verifyEmailVerificationCode = async (userId: string, code: string) 
 
 	// Return a success message
 	return { success: true, message: 'Email verification successful!' };
+};
+
+export const createPasswordResetToken = async (userId: string) => {
+	const tokenId = generateId(40);
+
+	await database.transaction(async (trx) => {
+		await trx.delete(passwordResetTokensTable).where(eq(passwordResetTokensTable.userId, userId));
+
+		await trx.insert(passwordResetTokensTable).values({
+			id: tokenId,
+			userId,
+			expiresAt: createDate(new TimeSpan(15, 'm')) // 15 minutes
+		});
+	});
+
+	return tokenId;
+};
+
+export const sendPasswordResetEmail = async (email: string, resetToken: string) => {
+	const { error } = await resend.emails.send({
+		from: 'Lucia V3 example <onboarding@resend.dev>',
+		to: [email],
+		subject: 'Password Reset',
+		html: `<p>Click <a href="http://localhost:5173/reset-password/${resetToken}">here</a> to reset your password.</p>`
+	});
+
+	if (error) {
+		console.error({ error });
+		return { success: false, message: 'Failed to send password reset email.' };
+	}
+
+	return { success: true, message: 'Password reset email sent successfully.' };
 };
