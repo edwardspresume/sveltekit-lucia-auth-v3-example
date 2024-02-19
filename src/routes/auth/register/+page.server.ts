@@ -12,7 +12,7 @@ import {
 	generateEmailVerificationCode,
 	sendEmailVerificationCode
 } from '$lib/database/authUtils.server';
-import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.server';
+import { checkIfUserExists, insertNewUser } from '$lib/database/databaseUtils.server';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
@@ -38,9 +38,9 @@ export const actions: Actions = {
 		}
 
 		try {
-			const isEmailAlreadyRegistered = await checkIfEmailExists(registerUserFormData.data.email);
+			const isEmailAlreadyRegistered = await checkIfUserExists(registerUserFormData.data.email);
 
-			if (isEmailAlreadyRegistered === true) {
+			if (isEmailAlreadyRegistered) {
 				return setError(registerUserFormData, 'email', 'Email already registered');
 			}
 
