@@ -5,7 +5,7 @@ export const MAX_NAME_LENGTH = 50;
 export const MAX_EMAIL_LENGTH = 254;
 const MIN_PASSWORD_LENGTH = 2;
 export const MAX_PASSWORD_LENGTH = 128;
-const EMAIL_VERIFICATION_CODE_LENGTH = 8;
+export const EMAIL_VERIFICATION_CODE_LENGTH = 8;
 
 const NAME_MIN_ERROR_MESSAGE = `Name must be at least ${MIN_NAME_LENGTH} characters long`;
 const NAME_MAX_ERROR_MESSAGE = `Name must be less than ${MAX_NAME_LENGTH} characters long`;
