@@ -12,7 +12,9 @@
 
 	export let data: PageData;
 
-	const { enhance, form, errors, message } = superForm(data.passwordResetFormData, {
+	const { verifyPasswordResetTokenResult, passwordResetFormData } = data;
+
+	const { enhance, form, errors, message } = superForm(passwordResetFormData, {
 		resetForm: true,
 		taintedMessage: null,
 		validators: PasswordResetZodSchema,
@@ -29,31 +31,37 @@
 	});
 </script>
 
-<h1 class="mb-6 text-2xl font-bold leading-none">Reset Password</h1>
+{#if verifyPasswordResetTokenResult.success === false}
+	<h1 class="text-2xl font-bold text-red-600">
+		{verifyPasswordResetTokenResult.message}
+	</h1>
+{:else}
+	<h1 class="mb-6 text-2xl font-bold leading-none">Reset Password</h1>
 
-<form
-	use:enhance
-	method="post"
-	class="space-y-4"
-	action={route('resetPassword /auth/reset-password')}
->
-	<InputField
-		type="password"
-		name="newPassword"
-		label="New Password"
-		bind:value={$form.newPassword}
-		errorMessage={$errors.newPassword}
-		maxlength={MAX_PASSWORD_LENGTH}
-	/>
+	<form
+		use:enhance
+		method="post"
+		class="space-y-4"
+		action={route('resetPassword /auth/reset-password')}
+	>
+		<InputField
+			type="password"
+			name="newPassword"
+			label="New Password"
+			bind:value={$form.newPassword}
+			errorMessage={$errors.newPassword}
+			maxlength={MAX_PASSWORD_LENGTH}
+		/>
 
-	<InputField
-		type="password"
-		name="confirmPassword"
-		label="Confirm Password"
-		bind:value={$form.confirmPassword}
-		errorMessage={$errors.confirmPassword}
-		maxlength={MAX_PASSWORD_LENGTH}
-	/>
+		<InputField
+			type="password"
+			name="confirmPassword"
+			label="Confirm Password"
+			bind:value={$form.confirmPassword}
+			errorMessage={$errors.confirmPassword}
+			maxlength={MAX_PASSWORD_LENGTH}
+		/>
 
-	<SubmitButton />
-</form>
+		<SubmitButton />
+	</form>
+{/if}
