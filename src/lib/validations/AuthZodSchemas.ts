@@ -13,8 +13,6 @@ const EMAIL_MAX_ERROR_MESSAGE = `Email must be less than ${MAX_EMAIL_LENGTH} cha
 const PASSWORD_MIN_ERROR_MESSAGE = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`;
 const PASSWORD_MAX_ERROR_MESSAGE = `Password must be less than ${MAX_PASSWORD_LENGTH} characters long`;
 
-const emailSchema = z.string().email().max(MAX_EMAIL_LENGTH, EMAIL_MAX_ERROR_MESSAGE);
-
 const advancedPasswordSchema = z
 	.string()
 	.min(MIN_PASSWORD_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
@@ -24,19 +22,21 @@ const advancedPasswordSchema = z
 	.refine((password) => /\d/.test(password), { message: ' Requires a number' })
 	.refine((password) => /[@$!%*?&]/.test(password), { message: ' Requires a special character' });
 
+export const emailZodSchema = z.string().email().max(MAX_EMAIL_LENGTH, EMAIL_MAX_ERROR_MESSAGE);
+
 export const RegisterUserZodSchema = z.object({
 	name: z
 		.string()
 		.min(MIN_NAME_LENGTH, NAME_MIN_ERROR_MESSAGE)
 		.max(MAX_NAME_LENGTH, NAME_MAX_ERROR_MESSAGE),
 
-	email: emailSchema,
+	email: emailZodSchema,
 
 	password: advancedPasswordSchema
 });
 
 export const UserLoginZodSchema = z.object({
-	email: emailSchema,
+	email: emailZodSchema,
 	password: z
 		.string()
 		.min(MIN_PASSWORD_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
