@@ -43,6 +43,8 @@ export const UserLoginZodSchema = z.object({
 		.max(MAX_PASSWORD_LENGTH, PASSWORD_MAX_ERROR_MESSAGE)
 });
 
+export const passwordResetEmailZodSchema = UserLoginZodSchema.pick({ email: true });
+
 export const EmailVerificationCodeZodSchema = z.object({
 	verificationCode: z.string().length(EMAIL_VERIFICATION_CODE_LENGTH)
 });
