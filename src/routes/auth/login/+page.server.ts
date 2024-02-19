@@ -95,6 +95,13 @@ export const actions: Actions = {
 				);
 			}
 
+			if (!existingUser.isEmailVerified) {
+				return message(passwordResetEmailFormData, {
+					alertType: 'error',
+					alertText: 'You must verify your email before resetting your password.'
+				});
+			}
+
 			const resetToken = await createPasswordResetToken(existingUser.id);
 
 			const sendPasswordResetEmailResult = await sendPasswordResetEmail(
