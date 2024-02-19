@@ -2,15 +2,17 @@ import { eq } from 'drizzle-orm';
 import { database } from './database.server';
 import { usersTable, type UserInsertSchema } from './schema';
 
-export const checkIfEmailExists = async (email: string) => {
-	const queryResult = await database
+export const checkIfUserExists = async (email: string) => {
+	const [existingUser] = await database
 		.select({
-			email: usersTable.email
+			id: usersTable.id,
+			password: usersTable.password,
+			isEmailVerified: usersTable.isEmailVerified
 		})
 		.from(usersTable)
 		.where(eq(usersTable.email, email));
 
-	return queryResult.length > 0;
+	return existingUser;
 };
 
 export const insertNewUser = async (user: UserInsertSchema) => {
