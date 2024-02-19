@@ -60,6 +60,10 @@
 			if (alertType === 'error') {
 				toast.error(alertText);
 			}
+
+			if (alertType === 'success') {
+				toast.success(alertText);
+			}
 		}
 	});
 </script>
