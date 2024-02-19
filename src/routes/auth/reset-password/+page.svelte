@@ -39,10 +39,10 @@
 >
 	<InputField
 		type="password"
-		name="password"
-		label="Password"
-		bind:value={$form.password}
-		errorMessage={$errors.password}
+		name="newPassword"
+		label="New Password"
+		bind:value={$form.newPassword}
+		errorMessage={$errors.newPassword}
 		maxlength={MAX_PASSWORD_LENGTH}
 	/>
 

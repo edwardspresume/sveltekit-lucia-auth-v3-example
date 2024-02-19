@@ -54,10 +54,10 @@ export const EmailVerificationCodeZodSchema = z.object({
 
 export const PasswordResetZodSchema = z
 	.object({
-		password: passwordSchema,
+		newPassword: passwordSchema,
 		confirmPassword: passwordSchema
 	})
-	.refine((data) => data.password === data.confirmPassword, {
+	.refine((data) => data.newPassword === data.confirmPassword, {
 		message: " Passwords don't match",
 		path: ['confirmPassword']
 	});
