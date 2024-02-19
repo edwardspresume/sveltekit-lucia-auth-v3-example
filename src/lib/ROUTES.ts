@@ -31,6 +31,7 @@ const ACTIONS = {
   "verifyCode /auth/email-verification": `/auth/email-verification?/verifyCode`,
   "sendNewCode /auth/email-verification": `/auth/email-verification?/sendNewCode`,
   "logInUser /auth/login": `/auth/login?/logInUser`,
+  "sendPasswordResetEmail /auth/login": `/auth/login?/sendPasswordResetEmail`,
   "registerUser /auth/register": `/auth/register?/registerUser`,
   "resetPassword /auth/reset-password": `/auth/reset-password?/resetPassword`,
   "logout /dashboard": `/dashboard?/logout`,
@@ -122,7 +123,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 export type KIT_ROUTES = { 
   PAGES: { '/': never, '/auth/email-verification': never, '/auth/login': never, '/auth/register': never, '/auth/reset-password': never, '/dashboard': never }
   SERVERS: Record<string, never>
-  ACTIONS: { 'verifyCode /auth/email-verification': never, 'sendNewCode /auth/email-verification': never, 'logInUser /auth/login': never, 'registerUser /auth/register': never, 'resetPassword /auth/reset-password': never, 'logout /dashboard': never, 'deleteAllUsers /dashboard': never }
+  ACTIONS: { 'verifyCode /auth/email-verification': never, 'sendNewCode /auth/email-verification': never, 'logInUser /auth/login': never, 'sendPasswordResetEmail /auth/login': never, 'registerUser /auth/register': never, 'resetPassword /auth/reset-password': never, 'logout /dashboard': never, 'deleteAllUsers /dashboard': never }
   LINKS: Record<string, never>
   Params: Record<string, never>
 }
