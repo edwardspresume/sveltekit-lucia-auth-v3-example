@@ -6,6 +6,7 @@ export const checkIfUserExists = async (email: string) => {
 	const [existingUser] = await database
 		.select({
 			id: usersTable.id,
+			email: usersTable.email,
 			password: usersTable.password,
 			isEmailVerified: usersTable.isEmailVerified
 		})
