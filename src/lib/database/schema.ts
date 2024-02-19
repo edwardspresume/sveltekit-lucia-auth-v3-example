@@ -40,7 +40,7 @@ export const usersSessionsTable = sqliteTable('users_sessions', {
 });
 
 export const passwordResetTokensTable = sqliteTable('password_reset_tokens', {
-	id: text('id').primaryKey().notNull(),
+	id: text('id').primaryKey().notNull().unique(),
 
 	userId: text('user_id')
 		.notNull()
