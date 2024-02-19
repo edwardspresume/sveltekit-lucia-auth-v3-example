@@ -10,6 +10,7 @@ import { route } from '$lib/ROUTES';
 import {
 	createAndSetSession,
 	createPasswordResetToken,
+	passwordResetRateLimiter,
 	sendPasswordResetEmail
 } from '$lib/database/authUtils.server';
 import { checkIfUserExists } from '$lib/database/databaseUtils.server';
@@ -18,7 +19,9 @@ import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { UserLoginZodSchema, passwordResetEmailZodSchema } from '$validations/AuthZodSchemas';
 
-export const load = (async () => {
+export const load = (async (event) => {
+	await passwordResetRateLimiter.cookieLimiter?.preflight(event);
+
 	return {
 		userLoginFormData: await superValidate(UserLoginZodSchema),
 		passwordResetEmailFormData: await superValidate(passwordResetEmailZodSchema)
@@ -71,17 +74,32 @@ export const actions: Actions = {
 		throw redirect(303, DASHBOARD_ROUTE);
 	},
 
-	sendPasswordResetEmail: async ({ request }) => {
+	sendPasswordResetEmail: async (event) => {
 		const passwordResetEmailFormData = await superValidate<
 			typeof passwordResetEmailZodSchema,
 			AlertMessageType
-		>(request, passwordResetEmailZodSchema);
+		>(event.request, passwordResetEmailZodSchema);
 
 		if (passwordResetEmailFormData.valid === false) {
 			return message(passwordResetEmailFormData, {
 				alertType: 'error',
 				alertText: 'There was a problem with your submission.'
 			});
+		}
+
+		const passwordResetRateLimiterResult = await passwordResetRateLimiter.check(event);
+
+		if (passwordResetRateLimiterResult.limited) {
+			return message(
+				passwordResetEmailFormData,
+				{
+					alertType: 'error',
+					alertText: `You have made too many requests and exceeded the rate limit. Please try again after ${passwordResetRateLimiterResult.retryAfter} seconds.`
+				},
+				{
+					status: 429
+				}
+			);
 		}
 
 		try {
