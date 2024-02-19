@@ -207,3 +207,26 @@ export const createPasswordResetToken = async (userId: string) => {
 
 	return tokenId;
 };
+
+export const verifyPasswordResetToken = async (tokenId: string) => {
+	const [passwordResetToken] = await database
+		.select()
+		.from(passwordResetTokensTable)
+		.where(eq(passwordResetTokensTable.id, tokenId));
+
+	if (!passwordResetToken || passwordResetToken.id !== tokenId) {
+		return {
+			success: false,
+			message: 'The password reset link is invalid. Please request a new one.'
+		};
+	}
+
+	if (!isWithinExpirationDate(passwordResetToken.expiresAt)) {
+		return {
+			success: false,
+			message: 'The password reset link has expired. Please request a new one.'
+		};
+	}
+
+	return { success: true, message: 'Password reset token is valid.' };
+};
