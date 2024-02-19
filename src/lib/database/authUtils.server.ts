@@ -8,6 +8,7 @@ import { alphabet, generateRandomString } from 'oslo/crypto';
 import { Resend } from 'resend';
 import { RetryAfterRateLimiter } from 'sveltekit-rate-limiter/server';
 
+import { route } from '$lib/ROUTES';
 import { EMAIL_VERIFICATION_CODE_LENGTH } from '$validations/AuthZodSchemas';
 import { database } from './database.server';
 import { emailVerificationCodesTable, passwordResetTokensTable } from './schema';
@@ -165,7 +166,7 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
 		from: 'Lucia V3 example <onboarding@resend.dev>',
 		to: [email],
 		subject: 'Password Reset',
-		html: `<p>Click <a href="http://localhost:5173/reset-password/${resetToken}">here</a> to reset your password.</p>`
+		html: `<p>Click <a href="http://localhost:5173${route('/auth/reset-password')}/${resetToken}">here</a> to reset your password.</p>`
 	});
 
 	if (error) {
