@@ -3,22 +3,25 @@ import type { Actions, PageServerLoad } from './$types';
 
 import { redirect as flashMessageRedirect } from 'sveltekit-flash-message/server';
 
-import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
 import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
 import { route } from '$lib/ROUTES';
-import { createAndSetSession } from '$lib/database/authUtils.server';
-import { database } from '$lib/database/database.server';
+import {
+	createAndSetSession,
+	createPasswordResetToken,
+	sendPasswordResetEmail
+} from '$lib/database/authUtils.server';
+import { checkIfUserExists } from '$lib/database/databaseUtils.server';
 import { lucia } from '$lib/database/luciaAuth.server';
-import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
-import { UserLoginZodSchema } from '$validations/AuthZodSchemas';
+import { UserLoginZodSchema, passwordResetEmailZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async () => {
 	return {
-		userLoginFormData: await superValidate(UserLoginZodSchema)
+		userLoginFormData: await superValidate(UserLoginZodSchema),
+		passwordResetEmailFormData: await superValidate(passwordResetEmailZodSchema)
 	};
 }) satisfies PageServerLoad;
 
@@ -37,16 +40,9 @@ export const actions: Actions = {
 			});
 		}
 
-		const [existingUser] = await database
-			.select({
-				id: usersTable.id,
-				password: usersTable.password,
-				isEmailVerified: usersTable.isEmailVerified
-			})
-			.from(usersTable)
-			.where(eq(usersTable.email, userLoginFormData.data.email));
+		const existingUser = await checkIfUserExists(userLoginFormData.data.email);
 
-		if (existingUser === undefined) {
+		if (!existingUser) {
 			return setError(userLoginFormData, 'email', 'Email not registered');
 		}
 
@@ -73,5 +69,55 @@ export const actions: Actions = {
 		await createAndSetSession(lucia, existingUser.id, cookies);
 
 		throw redirect(303, DASHBOARD_ROUTE);
+	},
+
+	sendPasswordResetEmail: async ({ request }) => {
+		const passwordResetEmailFormData = await superValidate<
+			typeof passwordResetEmailZodSchema,
+			AlertMessageType
+		>(request, passwordResetEmailZodSchema);
+
+		if (passwordResetEmailFormData.valid === false) {
+			return message(passwordResetEmailFormData, {
+				alertType: 'error',
+				alertText: 'There was a problem with your submission.'
+			});
+		}
+
+		try {
+			const existingUser = await checkIfUserExists(passwordResetEmailFormData.data.email);
+
+			if (!existingUser) {
+				return setError(
+					passwordResetEmailFormData,
+					'email',
+					'The email you entered is not associated with any registered account.'
+				);
+			}
+
+			const resetToken = await createPasswordResetToken(existingUser.id);
+
+			const sendPasswordResetEmailResult = await sendPasswordResetEmail(
+				existingUser.email,
+				resetToken
+			);
+
+			if (!sendPasswordResetEmailResult.success) {
+				return message(passwordResetEmailFormData, {
+					alertType: 'error',
+					alertText: sendPasswordResetEmailResult.message
+				});
+			}
+
+			return message(passwordResetEmailFormData, {
+				alertType: 'success',
+				alertText: sendPasswordResetEmailResult.message
+			});
+		} catch (error) {
+			return message(passwordResetEmailFormData, {
+				alertType: 'error',
+				alertText: 'An error occurred while processing your request. Please try again.'
+			});
+		}
 	}
 };
