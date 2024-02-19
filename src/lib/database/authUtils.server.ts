@@ -173,5 +173,8 @@ export const sendPasswordResetEmail = async (email: string, resetToken: string) 
 		return { success: false, message: 'Failed to send password reset email.' };
 	}
 
-	return { success: true, message: 'Password reset email sent successfully.' };
+	return {
+		success: true,
+		message: `An email has been sent to ${email} with instructions on how to reset your password.`
+	};
 };
