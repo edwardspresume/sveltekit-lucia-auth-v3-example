@@ -14,9 +14,15 @@
 			Hello <span class="font-bold">{data.loggedInUserName}</span>
 		</h1>
 
-		<form method="post" action={route('logout /dashboard')}>
-			<SubmitButton>Logout</SubmitButton>
-		</form>
+		<div class="flex gap-2">
+			<form method="post" action="">
+				<SubmitButton>Reset Password</SubmitButton>
+			</form>
+
+			<form method="post" action={route('logout /dashboard')}>
+				<SubmitButton>Logout</SubmitButton>
+			</form>
+		</div>
 	</section>
 
 	<hr class="my-8" />
