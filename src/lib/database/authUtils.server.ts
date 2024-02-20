@@ -233,5 +233,9 @@ export const verifyPasswordResetToken = async (tokenId: string) => {
 		};
 	}
 
-	return { success: true, message: 'Password reset token is valid.' };
+	return {
+		success: true,
+		userId: passwordResetToken.userId,
+		message: 'Password reset token is valid.'
+	};
 };
