@@ -1,6 +1,7 @@
-import { error, redirect } from '@sveltejs/kit';
+import { error } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
+import { redirect } from 'sveltekit-flash-message/server';
 import { message, superValidate } from 'sveltekit-superforms/server';
 
 import { eq } from 'drizzle-orm';
@@ -36,11 +37,7 @@ export const load = (async (event) => {
 export const actions: Actions = {
 	resetPassword: async (event) => {
 		const formData = await event.request.formData();
-		const passwordResetToken = formData.get('passwordResetToken') as string;
-
-		if (!passwordResetToken) {
-			error(400, 'Password reset token is missing from the request.');
-		}
+		const passwordResetToken = formData.get('passwordResetToken');
 
 		const passwordResetFormData = await superValidate<
 			typeof PasswordResetZodSchema,
@@ -55,9 +52,11 @@ export const actions: Actions = {
 		}
 
 		try {
+			// Check if the rate limit for password reset action has been exceeded
 			const passwordResetActionRateLimiterResult =
 				await passwordResetActionRateLimiter.check(event);
 
+			// If the rate limit has been exceeded, return an error message
 			if (passwordResetActionRateLimiterResult.limited) {
 				return message(
 					passwordResetFormData,
@@ -71,9 +70,13 @@ export const actions: Actions = {
 				);
 			}
 
+			if (typeof passwordResetToken !== 'string') {
+				throw new Error('Password reset token is not a string.');
+			}
+
 			const verifyPasswordResetTokenResult = await verifyPasswordResetToken(passwordResetToken);
 
-			if (!verifyPasswordResetTokenResult.success) {
+			if (verifyPasswordResetTokenResult.success === false) {
 				return message(
 					passwordResetFormData,
 					{
@@ -89,13 +92,19 @@ export const actions: Actions = {
 			const userId = verifyPasswordResetTokenResult.userId;
 
 			if (userId) {
+				// Hash the new password
 				const hashedPassword = await new Argon2id().hash(passwordResetFormData.data.newPassword);
 
+				// Invalidate all user sessions before updating the password for security reasons
+				await lucia.invalidateUserSessions(userId);
+
 				await database.transaction(async (trx) => {
+					// Delete the password reset token from the database
 					await trx
 						.delete(passwordResetTokensTable)
 						.where(eq(passwordResetTokensTable.id, passwordResetToken));
 
+					// Update the user's password in the database
 					await trx
 						.update(usersTable)
 						.set({ password: hashedPassword })
@@ -118,6 +127,13 @@ export const actions: Actions = {
 			);
 		}
 
-		throw redirect(303, DASHBOARD_ROUTE);
+		throw redirect(
+			DASHBOARD_ROUTE,
+			{
+				type: 'success',
+				message: 'Your password has been reset. You are now logged in.'
+			},
+			event.cookies
+		);
 	}
 };
