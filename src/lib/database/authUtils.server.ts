@@ -5,13 +5,14 @@ import { eq } from 'drizzle-orm';
 import { TimeSpan, generateId, type Lucia } from 'lucia';
 import { createDate, isWithinExpirationDate } from 'oslo';
 import { alphabet, generateRandomString } from 'oslo/crypto';
+import { Argon2id } from 'oslo/password';
 import { Resend } from 'resend';
 import { RetryAfterRateLimiter } from 'sveltekit-rate-limiter/server';
 
 import { route } from '$lib/ROUTES';
 import { EMAIL_VERIFICATION_CODE_LENGTH } from '$validations/AuthZodSchemas';
 import { database } from './database.server';
-import { emailVerificationCodesTable, passwordResetTokensTable } from './schema';
+import { emailVerificationCodesTable, passwordResetTokensTable, usersTable } from './schema';
 
 const resend = new Resend(RESEND_API_KEY);
 
@@ -238,4 +239,23 @@ export const verifyPasswordResetToken = async (tokenId: string) => {
 		userId: passwordResetToken.userId,
 		message: 'Password reset token is valid.'
 	};
+};
+
+export const isSameAsOldPassword = async (userId: string, newPassword: string) => {
+	const [user] = await database
+		.select({
+			password: usersTable.password
+		})
+		.from(usersTable)
+		.where(eq(usersTable.id, userId));
+
+	// If user doesn't exist, return false
+	if (!user) {
+		return false;
+	}
+
+	// Verify the old password
+	const isSamePassword = await new Argon2id().verify(user.password, newPassword);
+
+	return isSamePassword;
 };
