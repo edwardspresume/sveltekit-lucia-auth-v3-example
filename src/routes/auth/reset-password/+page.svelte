@@ -9,6 +9,7 @@
 
 	import InputField from '$components/form/InputField.svelte';
 	import SubmitButton from '$components/form/SubmitButton.svelte';
+	import Button from '$components/ui/button/button.svelte';
 
 	export let data: PageData;
 
@@ -32,9 +33,11 @@
 </script>
 
 {#if verifyPasswordResetTokenResult.success === false}
-	<h1 class="text-2xl font-bold text-red-600">
+	<h1 class="mb-5 text-2xl font-bold text-red-600">
 		{verifyPasswordResetTokenResult.message}
 	</h1>
+
+	<Button href={route('/auth/login')}>Return to Login Page to Request a New Code</Button>
 {:else}
 	<h1 class="mb-6 text-2xl font-bold leading-none">Reset Password</h1>
 
