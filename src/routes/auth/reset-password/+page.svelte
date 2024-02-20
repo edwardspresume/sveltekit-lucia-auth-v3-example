@@ -14,7 +14,7 @@
 
 	const { verifyPasswordResetTokenResult, passwordResetFormData } = data;
 
-	const { enhance, form, errors, message } = superForm(passwordResetFormData, {
+	const { enhance, form, errors, message, delayed } = superForm(passwordResetFormData, {
 		resetForm: true,
 		taintedMessage: null,
 		validators: PasswordResetZodSchema,
@@ -62,6 +62,6 @@
 			maxlength={MAX_PASSWORD_LENGTH}
 		/>
 
-		<SubmitButton />
+		<SubmitButton disabled={$delayed} />
 	</form>
 {/if}
