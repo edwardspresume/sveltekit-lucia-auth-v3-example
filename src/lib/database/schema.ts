@@ -48,4 +48,5 @@ export const passwordResetTokensTable = sqliteTable('password_reset_tokens', {
 
 	expiresAt: integer('expires_at', { mode: 'timestamp' }).notNull()
 });
+
 export type UserInsertSchema = typeof usersTable.$inferInsert;
