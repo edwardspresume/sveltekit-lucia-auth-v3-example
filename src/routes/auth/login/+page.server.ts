@@ -46,7 +46,11 @@ export const actions: Actions = {
 		const existingUser = await checkIfUserExists(userLoginFormData.data.email);
 
 		if (!existingUser) {
-			return setError(userLoginFormData, 'email', 'Email not registered');
+			return setError(
+				userLoginFormData,
+				'email',
+				"No account registered with this email. Please ensure you've entered the correct email."
+			);
 		}
 
 		const isPasswordValid = await new Argon2id().verify(
