@@ -8,6 +8,7 @@ import { message, superValidate } from 'sveltekit-superforms/client';
 import { route } from '$lib/ROUTES';
 import {
 	deleteSessionCookie,
+	isSameAsOldPassword,
 	passwordResetActionRateLimiter
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
@@ -85,6 +86,24 @@ export const actions: Actions = {
 					},
 					{
 						status: 429
+					}
+				);
+			}
+
+			const isSamePassword = await isSameAsOldPassword(
+				userId,
+				passwordResetFormData.data.newPassword
+			);
+
+			if (isSamePassword) {
+				return message(
+					passwordResetFormData,
+					{
+						alertType: 'error',
+						alertText: 'Your new password cannot be the same as your old password.'
+					},
+					{
+						status: 400
 					}
 				);
 			}

@@ -9,6 +9,7 @@ import { Argon2id } from 'oslo/password';
 
 import {
 	createAndSetSession,
+	isSameAsOldPassword,
 	passwordResetActionRateLimiter,
 	verifyPasswordResetToken
 } from '$lib/database/authUtils.server';
@@ -92,6 +93,23 @@ export const actions: Actions = {
 			const userId = verifyPasswordResetTokenResult.userId;
 
 			if (userId) {
+				const isSamePassword = await isSameAsOldPassword(
+					userId,
+					passwordResetFormData.data.newPassword
+				);
+
+				if (isSamePassword) {
+					return message(
+						passwordResetFormData,
+						{
+							alertType: 'error',
+							alertText: 'Your new password cannot be the same as your old password.'
+						},
+						{
+							status: 400
+						}
+					);
+				}
 				// Hash the new password
 				const hashedPassword = await new Argon2id().hash(passwordResetFormData.data.newPassword);
 
