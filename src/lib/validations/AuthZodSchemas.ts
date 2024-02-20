@@ -13,6 +13,9 @@ const EMAIL_MAX_ERROR_MESSAGE = `Email must be less than ${MAX_EMAIL_LENGTH} cha
 const PASSWORD_MIN_ERROR_MESSAGE = `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`;
 const PASSWORD_MAX_ERROR_MESSAGE = `Password must be less than ${MAX_PASSWORD_LENGTH} characters long`;
 
+const PASSWORD_SPECIAL_CHARS = '@$!%*?&';
+const PASSWORD_SPECIAL_CHARS_MESSAGE = ` Requires a special character: (${PASSWORD_SPECIAL_CHARS.split('').join(', ')})`;
+
 const advancedPasswordSchema = z
 	.string()
 	.min(MIN_PASSWORD_LENGTH, PASSWORD_MIN_ERROR_MESSAGE)
@@ -20,7 +23,9 @@ const advancedPasswordSchema = z
 	.refine((password) => /[a-z]/.test(password), { message: ' Requires a lowercase letter' })
 	.refine((password) => /[A-Z]/.test(password), { message: ' Requires an uppercase letter' })
 	.refine((password) => /\d/.test(password), { message: ' Requires a number' })
-	.refine((password) => /[@$!%*?&]/.test(password), { message: ' Requires a special character' });
+	.refine((password) => new RegExp(`[${PASSWORD_SPECIAL_CHARS}]`).test(password), {
+		message: PASSWORD_SPECIAL_CHARS_MESSAGE
+	});
 
 export const emailZodSchema = z.string().email().max(MAX_EMAIL_LENGTH, EMAIL_MAX_ERROR_MESSAGE);
 
