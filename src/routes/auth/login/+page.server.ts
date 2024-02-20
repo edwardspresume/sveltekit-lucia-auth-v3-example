@@ -19,6 +19,9 @@ import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { UserLoginZodSchema, passwordResetEmailZodSchema } from '$validations/AuthZodSchemas';
 
+const NO_REGISTERED_ACCOUNT_ERROR_MESSAGE =
+	"No account registered with this email. Please ensure you've entered the correct email.";
+
 export const load = (async (event) => {
 	await passwordResetEmailRateLimiter.cookieLimiter?.preflight(event);
 
@@ -46,11 +49,7 @@ export const actions: Actions = {
 		const existingUser = await checkIfUserExists(userLoginFormData.data.email);
 
 		if (!existingUser) {
-			return setError(
-				userLoginFormData,
-				'email',
-				"No account registered with this email. Please ensure you've entered the correct email."
-			);
+			return setError(userLoginFormData, 'email', NO_REGISTERED_ACCOUNT_ERROR_MESSAGE);
 		}
 
 		const isPasswordValid = await new Argon2id().verify(
@@ -110,11 +109,7 @@ export const actions: Actions = {
 			const existingUser = await checkIfUserExists(passwordResetEmailFormData.data.email);
 
 			if (!existingUser) {
-				return setError(
-					passwordResetEmailFormData,
-					'email',
-					'The email you entered is not associated with any registered account.'
-				);
+				return setError(passwordResetEmailFormData, 'email', NO_REGISTERED_ACCOUNT_ERROR_MESSAGE);
 			}
 
 			if (!existingUser.isEmailVerified) {
