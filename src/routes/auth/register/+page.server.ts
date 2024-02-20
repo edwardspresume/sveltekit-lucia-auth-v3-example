@@ -9,10 +9,11 @@ import { Argon2id } from 'oslo/password';
 import { route } from '$lib/ROUTES';
 import {
 	PENDING_USER_VERIFICATION_COOKIE_NAME,
+	checkIfUserExists,
 	generateEmailVerificationCode,
+	insertNewUser,
 	sendEmailVerificationCode
 } from '$lib/database/authUtils.server';
-import { checkIfUserExists, insertNewUser } from '$lib/database/databaseUtils.server';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';

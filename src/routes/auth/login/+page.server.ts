@@ -8,12 +8,12 @@ import { message, setError, superValidate } from 'sveltekit-superforms/server';
 
 import { route } from '$lib/ROUTES';
 import {
+	checkIfUserExists,
 	createAndSetSession,
 	createPasswordResetToken,
 	passwordResetEmailRateLimiter,
 	sendPasswordResetEmail
 } from '$lib/database/authUtils.server';
-import { checkIfUserExists } from '$lib/database/databaseUtils.server';
 import { lucia } from '$lib/database/luciaAuth.server';
 import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';

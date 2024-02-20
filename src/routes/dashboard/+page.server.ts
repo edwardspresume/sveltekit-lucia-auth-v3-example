@@ -7,12 +7,13 @@ import { message, superValidate } from 'sveltekit-superforms/client';
 
 import { route } from '$lib/ROUTES';
 import {
+	deleteAllUsers,
 	deleteSessionCookie,
+	getAllUsers,
 	isSameAsOldPassword,
 	passwordResetActionRateLimiter
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
-import { deleteAllUsers, getAllUsers } from '$lib/database/databaseUtils.server';
 import { lucia } from '$lib/database/luciaAuth.server';
 import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
