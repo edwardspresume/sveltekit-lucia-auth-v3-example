@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { page } from '$app/stores';
 	import type { PageData } from './$types';
 
 	import { toast } from 'svelte-sonner';
@@ -64,6 +65,7 @@
 			errorMessage={$errors.confirmPassword}
 			maxlength={MAX_PASSWORD_LENGTH}
 		/>
+		<input type="hidden" name="passwordResetToken" value={$page.url.searchParams.get('token')} />
 
 		<SubmitButton disabled={$delayed} />
 	</form>
