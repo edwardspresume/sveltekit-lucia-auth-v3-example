@@ -138,6 +138,8 @@ export const actions: Actions = {
 				alertText: sendPasswordResetEmailResult.message
 			});
 		} catch (error) {
+			console.error(error);
+
 			return message(passwordResetEmailFormData, {
 				alertType: 'error',
 				alertText: 'An error occurred while processing your request. Please try again.'
