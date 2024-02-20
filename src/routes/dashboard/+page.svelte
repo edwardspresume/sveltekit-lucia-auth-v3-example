@@ -3,7 +3,10 @@
 
 	import { route } from '$lib/ROUTES';
 
+	import PasswordResetForm from '$components/form/PasswordResetForm.svelte';
 	import SubmitButton from '$components/form/SubmitButton.svelte';
+	import { buttonVariants } from '$components/ui/button';
+	import * as Dialog from '$components/ui/dialog';
 
 	export let data: PageData;
 </script>
@@ -15,20 +18,33 @@
 		</h1>
 
 		<div class="flex gap-2">
-			<form method="post" action="">
-				<SubmitButton>Reset Password</SubmitButton>
-			</form>
-
 			<form method="post" action={route('logout /dashboard')}>
 				<SubmitButton>Logout</SubmitButton>
 			</form>
+
+			<Dialog.Root>
+				<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>
+					Reset Password
+				</Dialog.Trigger>
+				<Dialog.Content>
+					<Dialog.Header>
+						<Dialog.Title>Password Reset</Dialog.Title>
+						<Dialog.Description>Please enter your new password.</Dialog.Description>
+					</Dialog.Header>
+
+					<PasswordResetForm
+						formData={data.passwordResetFormData}
+						formAction={route('resetPassword /dashboard')}
+					/>
+				</Dialog.Content>
+			</Dialog.Root>
 		</div>
 	</section>
 
 	<hr class="my-8" />
 
-	<section class="max-w-md mt-4">
-		<header class="flex flex-wrap items-center justify-between gap-3 mb-9">
+	<section class="mt-4 max-w-md">
+		<header class="mb-9 flex flex-wrap items-center justify-between gap-3">
 			<h2 class="text-xl font-bold leading-none">List of all register users</h2>
 
 			<form method="post" action={route('deleteAllUsers /dashboard')}>
@@ -38,7 +54,7 @@
 
 		<ul class="space-y-4">
 			{#each data.allUsers as user}
-				<li class="p-2 rounded bg-accent">
+				<li class="rounded bg-accent p-2">
 					{user.name} - {user.email}
 				</li>
 			{/each}
