@@ -10,7 +10,7 @@ import { route } from '$lib/ROUTES';
 import {
 	createAndSetSession,
 	createPasswordResetToken,
-	passwordResetRateLimiter,
+	passwordResetEmailRateLimiter,
 	sendPasswordResetEmail
 } from '$lib/database/authUtils.server';
 import { checkIfUserExists } from '$lib/database/databaseUtils.server';
@@ -20,7 +20,7 @@ import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { UserLoginZodSchema, passwordResetEmailZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async (event) => {
-	await passwordResetRateLimiter.cookieLimiter?.preflight(event);
+	await passwordResetEmailRateLimiter.cookieLimiter?.preflight(event);
 
 	return {
 		userLoginFormData: await superValidate(UserLoginZodSchema),
@@ -87,7 +87,7 @@ export const actions: Actions = {
 			});
 		}
 
-		const passwordResetRateLimiterResult = await passwordResetRateLimiter.check(event);
+		const passwordResetRateLimiterResult = await passwordResetEmailRateLimiter.check(event);
 
 		if (passwordResetRateLimiterResult.limited) {
 			return message(
