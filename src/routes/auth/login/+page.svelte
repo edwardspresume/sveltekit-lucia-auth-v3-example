@@ -24,7 +24,8 @@
 		enhance: loginEnhance,
 		form: loginForm,
 		errors: loginErrors,
-		message: loginMessage
+		message: loginMessage,
+		delayed: loginDelayed
 	} = superForm(data.userLoginFormData, {
 		resetForm: true,
 		taintedMessage: null,
@@ -46,7 +47,8 @@
 		enhance: resetEnhance,
 		form: resetForm,
 		errors: resetErrors,
-		message: resetMessage
+		message: resetMessage,
+		delayed: resetDelayed
 	} = superForm(data.passwordResetEmailFormData, {
 		resetForm: true,
 		taintedMessage: null,
@@ -90,7 +92,7 @@
 	/>
 
 	<div class="flex justify-between">
-		<SubmitButton />
+		<SubmitButton disabled={$loginDelayed} />
 
 		<Dialog.Root>
 			<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>
@@ -119,7 +121,7 @@
 						maxlength={MAX_EMAIL_LENGTH}
 					/>
 
-					<SubmitButton>Send Reset Link</SubmitButton>
+					<SubmitButton disabled={$resetDelayed}>Send Reset Link</SubmitButton>
 				</form>
 			</Dialog.Content>
 		</Dialog.Root>
