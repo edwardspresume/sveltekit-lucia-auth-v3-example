@@ -57,7 +57,8 @@ export const passwordResetEmailZodSchema = UserLoginZodSchema.pick({ email: true
 export const PasswordResetZodSchema = z
 	.object({
 		newPassword: advancedPasswordSchema,
-		confirmPassword: advancedPasswordSchema
+		confirmPassword: advancedPasswordSchema,
+		passwordResetToken: z.string().optional()
 	})
 	.refine((data) => data.newPassword === data.confirmPassword, {
 		message: " Passwords don't match",
