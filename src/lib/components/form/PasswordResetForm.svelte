@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+
 	import { toast } from 'svelte-sonner';
 	import type { SuperValidated } from 'sveltekit-superforms';
 	import { superForm } from 'sveltekit-superforms/client';
 
 	import { MAX_PASSWORD_LENGTH, PasswordResetZodSchema } from '$validations/AuthZodSchemas';
 
-	import { page } from '$app/stores';
 	import InputField from './InputField.svelte';
 	import SubmitButton from './SubmitButton.svelte';
 
