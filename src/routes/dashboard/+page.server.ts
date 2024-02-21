@@ -86,7 +86,7 @@ export const actions: Actions = {
 						alertText: `You have made too many requests and exceeded the rate limit. Please try again after ${passwordResetActionRateLimiterResult.retryAfter} seconds.`
 					},
 					{
-						status: 429
+						status: 429 // Too Many Requests
 					}
 				);
 			}
@@ -104,7 +104,7 @@ export const actions: Actions = {
 						alertText: 'Your new password cannot be the same as your old password.'
 					},
 					{
-						status: 400
+						status: 400 // This status code indicates that the server could not understand the request due to invalid syntax (new password is the same as the old password).
 					}
 				);
 			}
