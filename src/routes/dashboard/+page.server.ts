@@ -54,7 +54,7 @@ export const actions: Actions = {
 		throw redirect(303, LOGIN_ROUTE);
 	},
 
-	resetPassword: async (event) => {
+	changePassword: async (event) => {
 		const userId = event.locals.user?.id;
 		const currentSessionId = event.locals.session?.id;
 

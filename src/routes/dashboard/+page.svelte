@@ -24,17 +24,17 @@
 
 			<Dialog.Root>
 				<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>
-					Reset Password
+					Change Password
 				</Dialog.Trigger>
 				<Dialog.Content>
 					<Dialog.Header>
-						<Dialog.Title>Password Reset</Dialog.Title>
+						<Dialog.Title>Password Change</Dialog.Title>
 						<Dialog.Description>Please enter your new password.</Dialog.Description>
 					</Dialog.Header>
 
 					<PasswordResetForm
 						formData={data.passwordResetFormData}
-						formAction={route('resetPassword /dashboard')}
+						formAction={route('changePassword /dashboard')}
 					/>
 				</Dialog.Content>
 			</Dialog.Root>
@@ -43,8 +43,8 @@
 
 	<hr class="my-8" />
 
-	<section class="mt-4 max-w-md">
-		<header class="mb-9 flex flex-wrap items-center justify-between gap-3">
+	<section class="max-w-md mt-4">
+		<header class="flex flex-wrap items-center justify-between gap-3 mb-9">
 			<h2 class="text-xl font-bold leading-none">List of all register users</h2>
 
 			<form method="post" action={route('deleteAllUsers /dashboard')}>
@@ -54,7 +54,7 @@
 
 		<ul class="space-y-4">
 			{#each data.allUsers as user}
-				<li class="rounded bg-accent p-2">
+				<li class="p-2 rounded bg-accent">
 					{user.name} - {user.email}
 				</li>
 			{/each}
