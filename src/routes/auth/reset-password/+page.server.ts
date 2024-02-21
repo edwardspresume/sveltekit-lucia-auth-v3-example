@@ -112,7 +112,7 @@ export const actions: Actions = {
 					passwordResetFormData.data.newPassword
 				);
 
-				if (isSamePassword) {
+				if (isSamePassword === true) {
 					return message(
 						passwordResetFormData,
 						{
