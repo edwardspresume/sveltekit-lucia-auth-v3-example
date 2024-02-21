@@ -11,7 +11,7 @@ import {
 	deleteSessionCookie,
 	getAllUsers,
 	isSameAsOldPassword,
-	passwordResetActionRateLimiter
+	passwordResetDashboardPageActionRateLimiter
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { lucia } from '$lib/database/luciaAuth.server';
@@ -34,7 +34,7 @@ export const load = (async (event) => {
 		);
 	}
 
-	await passwordResetActionRateLimiter.cookieLimiter?.preflight(event);
+	await passwordResetDashboardPageActionRateLimiter.cookieLimiter?.preflight(event);
 
 	return {
 		loggedInUserName: locals.user.name,
@@ -75,7 +75,7 @@ export const actions: Actions = {
 		try {
 			// Check if the rate limit for password reset action has been exceeded
 			const passwordResetActionRateLimiterResult =
-				await passwordResetActionRateLimiter.check(event);
+				await passwordResetDashboardPageActionRateLimiter.check(event);
 
 			// If the rate limit has been exceeded, return an error message
 			if (passwordResetActionRateLimiterResult.limited) {

@@ -10,7 +10,7 @@ import { Argon2id } from 'oslo/password';
 import {
 	createAndSetSession,
 	isSameAsOldPassword,
-	passwordResetActionRateLimiter,
+	passwordResetPageActionRateLimiter,
 	verifyPasswordResetToken
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
@@ -21,7 +21,7 @@ import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { PasswordResetZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async (event) => {
-	await passwordResetActionRateLimiter.cookieLimiter?.preflight(event);
+	await passwordResetPageActionRateLimiter.cookieLimiter?.preflight(event);
 
 	const passwordResetToken = event.url.searchParams.get('token');
 
@@ -58,7 +58,7 @@ export const actions: Actions = {
 		try {
 			// Check if the rate limit for password reset action has been exceeded
 			const passwordResetActionRateLimiterResult =
-				await passwordResetActionRateLimiter.check(event);
+				await passwordResetPageActionRateLimiter.check(event);
 
 			// If the rate limit has been exceeded, return an error message
 			if (passwordResetActionRateLimiterResult.limited) {

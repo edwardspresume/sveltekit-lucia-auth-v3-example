@@ -67,9 +67,9 @@ export const passwordResetEmailRateLimiter = createRateLimiter(
 	'passwordResetEmailRateLimiterCookieSecret'
 );
 
-export const passwordResetActionRateLimiter = createRateLimiter(
-	'passwordResetActionRateLimiterCookieId',
-	'passwordResetActionRateLimiterCookieSecret'
+export const passwordResetDashboardPageActionRateLimiter = createRateLimiter(
+	'passwordResetDashboardPageActionRateLimiterCookieId',
+	'passwordResetDashboardPageActionRateLimiterCookieSecret'
 );
 
 export const createAndSetSession = async (lucia: Lucia, userId: string, cookies: Cookies) => {
