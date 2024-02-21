@@ -19,7 +19,7 @@
 
 	export let data: PageData;
 
-	// Form for login
+	// For login form
 	const {
 		enhance: loginEnhance,
 		form: loginForm,
@@ -42,7 +42,7 @@
 		}
 	});
 
-	// Form for password reset
+	// For password reset form
 	const {
 		enhance: resetEnhance,
 		form: resetForm,
