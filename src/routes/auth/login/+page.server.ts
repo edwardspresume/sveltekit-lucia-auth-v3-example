@@ -83,29 +83,29 @@ export const actions: Actions = {
 			AlertMessageType
 		>(event.request, passwordResetEmailZodSchema);
 
-		if (passwordResetEmailFormData.valid === false) {
-			return message(passwordResetEmailFormData, {
-				alertType: 'error',
-				alertText: 'There was a problem with your submission.'
-			});
-		}
-
-		const passwordResetRateLimiterResult = await passwordResetEmailRateLimiter.check(event);
-
-		if (passwordResetRateLimiterResult.limited) {
-			return message(
-				passwordResetEmailFormData,
-				{
-					alertType: 'error',
-					alertText: `You have made too many requests and exceeded the rate limit. Please try again after ${passwordResetRateLimiterResult.retryAfter} seconds.`
-				},
-				{
-					status: 429
-				}
-			);
-		}
-
 		try {
+			if (passwordResetEmailFormData.valid === false) {
+				return message(passwordResetEmailFormData, {
+					alertType: 'error',
+					alertText: 'There was a problem with your submission.'
+				});
+			}
+
+			const passwordResetRateLimiterResult = await passwordResetEmailRateLimiter.check(event);
+
+			if (passwordResetRateLimiterResult.limited) {
+				return message(
+					passwordResetEmailFormData,
+					{
+						alertType: 'error',
+						alertText: `You have made too many requests and exceeded the rate limit. Please try again after ${passwordResetRateLimiterResult.retryAfter} seconds.`
+					},
+					{
+						status: 429 // user made to many request and triggered rate limit
+					}
+				);
+			}
+
 			const existingUser = await checkIfUserExists(passwordResetEmailFormData.data.email);
 
 			if (!existingUser) {
@@ -113,10 +113,17 @@ export const actions: Actions = {
 			}
 
 			if (!existingUser.isEmailVerified) {
-				return message(passwordResetEmailFormData, {
-					alertType: 'error',
-					alertText: 'You must verify your email before resetting your password.'
-				});
+				return message(
+					passwordResetEmailFormData,
+					{
+						alertType: 'error',
+						alertText: 'You must verify your email before resetting your password.'
+					},
+
+					{
+						status: 403 // This status code indicates that the server understood the request, but it refuses to authorize it because the user's email is not verified.
+					}
+				);
 			}
 
 			const resetToken = await createPasswordResetToken(existingUser.id);
@@ -127,10 +134,17 @@ export const actions: Actions = {
 			);
 
 			if (!sendPasswordResetEmailResult.success) {
-				return message(passwordResetEmailFormData, {
-					alertType: 'error',
-					alertText: sendPasswordResetEmailResult.message
-				});
+				return message(
+					passwordResetEmailFormData,
+					{
+						alertType: 'error',
+						alertText: sendPasswordResetEmailResult.message
+					},
+
+					{
+						status: 500 // Internal Server Error 
+					}
+				);
 			}
 
 			return message(passwordResetEmailFormData, {
