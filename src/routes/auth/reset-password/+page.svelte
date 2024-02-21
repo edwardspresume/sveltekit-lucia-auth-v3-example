@@ -9,9 +9,9 @@
 	export let data: PageData;
 </script>
 
-{#if data.verifyPasswordResetTokenResult.success === false}
+{#if data.passwordResetTokenStatus.isValid === false}
 	<h1 class="mb-5 text-2xl font-bold text-red-600">
-		{data.verifyPasswordResetTokenResult.message}
+		{data.passwordResetTokenStatus.message}
 	</h1>
 
 	<Button href={route('/auth/login')}>Return to Login Page to Request a New Code</Button>

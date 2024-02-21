@@ -29,8 +29,14 @@ export const load = (async (event) => {
 		error(400, 'Password reset token is missing from the request.');
 	}
 
+	const { success, message } = await verifyPasswordResetToken(passwordResetToken);
+
 	return {
-		verifyPasswordResetTokenResult: await verifyPasswordResetToken(passwordResetToken),
+		passwordResetTokenStatus: {
+			isValid: success,
+			message
+		},
+
 		passwordResetFormData: await superValidate(PasswordResetZodSchema)
 	};
 }) satisfies PageServerLoad;
