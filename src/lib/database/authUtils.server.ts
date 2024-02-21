@@ -67,6 +67,11 @@ export const passwordResetEmailRateLimiter = createRateLimiter(
 	'passwordResetEmailRateLimiterCookieSecret'
 );
 
+export const passwordResetPageActionRateLimiter = createRateLimiter(
+	'passwordResetPageActionRateLimiterCookieId',
+	'passwordResetPageActionRateLimiterCookieSecret'
+);
+
 export const passwordResetDashboardPageActionRateLimiter = createRateLimiter(
 	'passwordResetDashboardPageActionRateLimiterCookieId',
 	'passwordResetDashboardPageActionRateLimiterCookieSecret'
