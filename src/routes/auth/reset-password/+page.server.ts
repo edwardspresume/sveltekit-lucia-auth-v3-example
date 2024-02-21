@@ -43,13 +43,10 @@ export const load = (async (event) => {
 
 export const actions: Actions = {
 	resetPassword: async (event) => {
-		const formData = await event.request.formData();
-		const passwordResetToken = formData.get('passwordResetToken');
-
 		const passwordResetFormData = await superValidate<
 			typeof PasswordResetZodSchema,
 			AlertMessageType
-		>(formData, PasswordResetZodSchema);
+		>(event.request, PasswordResetZodSchema);
 
 		if (passwordResetFormData.valid === false) {
 			return message(passwordResetFormData, {
@@ -72,13 +69,24 @@ export const actions: Actions = {
 						alertText: `You have made too many requests and exceeded the rate limit. Please try again after ${passwordResetActionRateLimiterResult.retryAfter} seconds.`
 					},
 					{
-						status: 429
+						status: 429 // Too Many Requests
 					}
 				);
 			}
 
-			if (typeof passwordResetToken !== 'string') {
-				throw new Error('Password reset token is not a string.');
+			const passwordResetToken = passwordResetFormData.data.passwordResetToken;
+
+			if (!passwordResetToken) {
+				return message(
+					passwordResetFormData,
+					{
+						alertType: 'error',
+						alertText: 'Password reset token is missing from the request.'
+					},
+					{
+						status: 400 // This status code indicates that the server could not understand the request due to invalid syntax (missing password reset token).
+					}
+				);
 			}
 
 			const verifyPasswordResetTokenResult = await verifyPasswordResetToken(passwordResetToken);
@@ -91,7 +99,7 @@ export const actions: Actions = {
 						alertText: verifyPasswordResetTokenResult.message
 					},
 					{
-						status: 400
+						status: 400 // This status code indicates that the server could not understand the request due to invalid syntax (invalid password reset token).
 					}
 				);
 			}
@@ -112,10 +120,11 @@ export const actions: Actions = {
 							alertText: 'Your new password cannot be the same as your old password.'
 						},
 						{
-							status: 400
+							status: 400 // This status code indicates that the server could not understand the request due to invalid syntax (new password is the same as the old password).
 						}
 					);
 				}
+
 				// Hash the new password
 				const hashedPassword = await new Argon2id().hash(passwordResetFormData.data.newPassword);
 
@@ -135,6 +144,7 @@ export const actions: Actions = {
 						.where(eq(usersTable.id, userId));
 				});
 
+				// create session to log the user in
 				await createAndSetSession(lucia, userId, event.cookies);
 			}
 		} catch (error) {
