@@ -10,7 +10,7 @@ import { usersSessionsTable, usersTable } from './schema';
 
 const dbAdapter = new DrizzleSQLiteAdapter(database, usersSessionsTable, usersTable);
 
-export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
+export const githubOauth = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
 
 export const lucia = new Lucia(dbAdapter, {
 	sessionCookie: {
