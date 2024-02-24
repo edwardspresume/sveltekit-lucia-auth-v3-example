@@ -6,6 +6,10 @@ export const usersTable = sqliteTable('users', {
 
 	name: text('name').notNull(),
 
+	githubId: integer('github_id', { mode: 'number' }).unique(),
+
+	username: text('username').notNull(),
+
 	email: text('email').notNull().unique(),
 
 	isEmailVerified: integer('is_email_verified', { mode: 'boolean' }).notNull().default(false),
