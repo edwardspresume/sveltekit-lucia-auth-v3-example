@@ -4,17 +4,17 @@ import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 export const usersTable = sqliteTable('users', {
 	id: text('id').primaryKey().notNull(),
 
-	name: text('name').notNull(),
+	name: text('name'),
 
 	githubId: integer('github_id', { mode: 'number' }).unique(),
 
-	username: text('username').notNull(),
+	username: text('username'),
 
-	email: text('email').notNull().unique(),
+	email: text('email').unique(),
 
-	isEmailVerified: integer('is_email_verified', { mode: 'boolean' }).notNull().default(false),
+	isEmailVerified: integer('is_email_verified', { mode: 'boolean' }).default(false),
 
-	password: text('password').notNull(),
+	password: text('password'),
 
 	createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`)
 });
