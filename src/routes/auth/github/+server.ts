@@ -11,7 +11,9 @@ export const GET: RequestHandler = async ({ cookies }) => {
 	const state = generateState();
 
 	// Create the GitHub OAuth authorization URL using the state value
-	const url = await githubOauth.createAuthorizationURL(state);
+	const url = await githubOauth.createAuthorizationURL(state, {
+		scopes: ['user:email']
+	});
 
 	// Set a cookie with the state value, to be used for CSRF protection
 	cookies.set(GITHUB_OAUTH_STATE_COOKIE_NAME, state, {
