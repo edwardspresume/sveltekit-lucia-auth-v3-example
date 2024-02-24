@@ -21,7 +21,8 @@ const PAGES = {
  * SERVERS
  */
 const SERVERS = {
-  
+  "GET /auth/oauth/github": `/auth/oauth/github`,
+  "GET /auth/oauth/github/callback": `/auth/oauth/github/callback`
 }
 
 /**
@@ -123,7 +124,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 */
 export type KIT_ROUTES = { 
   PAGES: { '/': never, '/auth/email-verification': never, '/auth/login': never, '/auth/register': never, '/auth/reset-password': never, '/dashboard': never }
-  SERVERS: Record<string, never>
+  SERVERS: { 'GET /auth/oauth/github': never, 'GET /auth/oauth/github/callback': never }
   ACTIONS: { 'verifyCode /auth/email-verification': never, 'sendNewCode /auth/email-verification': never, 'logInUser /auth/login': never, 'sendPasswordResetEmail /auth/login': never, 'registerUser /auth/register': never, 'resetPassword /auth/reset-password': never, 'logout /dashboard': never, 'changePassword /dashboard': never, 'deleteAllUsers /dashboard': never }
   LINKS: Record<string, never>
   Params: Record<string, never>
