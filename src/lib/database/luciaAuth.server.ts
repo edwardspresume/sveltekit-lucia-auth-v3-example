@@ -18,6 +18,8 @@ export const lucia = new Lucia(dbAdapter, {
 	getUserAttributes: (attributes) => {
 		return {
 			name: attributes.name,
+			githubId: attributes.github_id,
+			username: attributes.username,
 			email: attributes.email,
 			isEmailVerified: attributes.isEmailVerified
 		};
@@ -29,6 +31,8 @@ declare module 'lucia' {
 		Lucia: typeof lucia;
 		DatabaseUserAttributes: {
 			name: string;
+			github_id: number;
+			username: string;
 			email: string;
 			isEmailVerified: boolean;
 		};
