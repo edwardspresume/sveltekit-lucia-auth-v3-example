@@ -79,7 +79,7 @@
 </div>
 
 <div>
-	<Button class="w-full gap-2 font-bold" href={route('GET /auth/oauth/github')}>
+	<Button class="w-full gap-2 font-bold" href={route('GET /auth/github')}>
 		<iconify-icon icon="mdi:github" width="25"></iconify-icon>
 		<span>Github</span>
 	</Button>
