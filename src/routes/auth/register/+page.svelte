@@ -14,6 +14,7 @@
 
 	import InputField from '$components/form/InputField.svelte';
 	import SubmitButton from '$components/form/SubmitButton.svelte';
+	import Button from '$components/ui/button/button.svelte';
 
 	export let data: PageData;
 
@@ -68,5 +69,18 @@
 		maxlength={MAX_PASSWORD_LENGTH}
 	/>
 
-	<SubmitButton />
+	<SubmitButton class="w-full">Sign up with email</SubmitButton>
 </form>
+
+<div class="flex items-center my-4">
+	<div class="flex-grow mr-3 border-t border-gray-500"></div>
+	<div>or</div>
+	<div class="flex-grow ml-3 border-t border-gray-500"></div>
+</div>
+
+<div>
+	<Button class="w-full gap-2 font-bold" href={route('GET /auth/oauth/github')}>
+		<iconify-icon icon="mdi:github" width="25"></iconify-icon>
+		<span>Github</span>
+	</Button>
+</div>
