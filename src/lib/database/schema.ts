@@ -6,6 +6,8 @@ export const usersTable = sqliteTable('users', {
 
 	name: text('name'),
 
+	avatarUrl: text('avatar_url'),
+
 	githubId: integer('github_id', { mode: 'number' }).unique(),
 
 	username: text('username'),
