@@ -43,6 +43,13 @@
       "when": 1708817007621,
       "tag": "0005_mysterious_nico_minoru",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1708830170475,
+      "tag": "0006_low_venus",
+      "breakpoints": true
     }
   ]
 }
