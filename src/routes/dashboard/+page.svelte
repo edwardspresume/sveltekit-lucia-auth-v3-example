@@ -15,6 +15,8 @@
 
 	const nameInitial = loggedInUser.name?.charAt(0).toUpperCase();
 	const emailInitial = loggedInUser.email.charAt(0).toUpperCase();
+
+	const isOnlyOauthUser = !loggedInUser.authProviders.includes('email');
 </script>
 
 <div>
@@ -36,22 +38,24 @@
 					<SubmitButton>Logout</SubmitButton>
 				</form>
 
-				<Dialog.Root>
-					<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>
-						Change Password
-					</Dialog.Trigger>
-					<Dialog.Content>
-						<Dialog.Header>
-							<Dialog.Title>Password Change</Dialog.Title>
-							<Dialog.Description>Please enter your new password.</Dialog.Description>
-						</Dialog.Header>
+				{#if isOnlyOauthUser === false}
+					<Dialog.Root>
+						<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>
+							Change Password
+						</Dialog.Trigger>
+						<Dialog.Content>
+							<Dialog.Header>
+								<Dialog.Title>Password Change</Dialog.Title>
+								<Dialog.Description>Please enter your new password.</Dialog.Description>
+							</Dialog.Header>
 
-						<PasswordResetForm
-							formData={data.passwordResetFormData}
-							formAction={route('changePassword /dashboard')}
-						/>
-					</Dialog.Content>
-				</Dialog.Root>
+							<PasswordResetForm
+								formData={data.passwordResetFormData}
+								formAction={route('changePassword /dashboard')}
+							/>
+						</Dialog.Content>
+					</Dialog.Root>
+				{/if}
 			</div>
 		</div>
 	</section>
