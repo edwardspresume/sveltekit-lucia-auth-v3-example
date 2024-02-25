@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 
 import { OAuth2RequestError } from 'arctic';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 
 import { route } from '$lib/ROUTES';
@@ -32,8 +32,9 @@ export const GET: RequestHandler = async (event) => {
 	const storedState = event.cookies.get(GOOGLE_OAUTH_STATE_COOKIE_NAME);
 	const storedCodeVerifier = event.cookies.get(GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME);
 
+	// Validate OAuth state and code verifier
 	if (!code || !state || !storedState || !storedCodeVerifier || state !== storedState) {
-		return new Response(null, {
+		return new Response('Invalid OAuth state or code verifier', {
 			status: 400
 		});
 	}
@@ -61,24 +62,38 @@ export const GET: RequestHandler = async (event) => {
 			});
 		}
 
+		// Check if the user already exists
 		const [existingUser] = await database
 			.select()
 			.from(usersTable)
 			.where(eq(usersTable.email, googleUser.email));
 
-		// If the user exists, create and set a new session
 		if (existingUser) {
-			await database.insert(oauthAccountsTable).values({
-				userId: existingUser.id,
-				providerId: 'google',
-				providerUserId: googleUser.sub
-			});
+			// Check if the user already has a Google OAuth account linked
+			const [existingOauthAccount] = await database
+				.select()
+				.from(oauthAccountsTable)
+				.where(
+					and(
+						eq(oauthAccountsTable.userId, existingUser.id),
+						eq(oauthAccountsTable.providerId, 'google')
+					)
+				);
+
+			if (!existingOauthAccount) {
+				// Link the Google OAuth account to the existing user
+				await database.insert(oauthAccountsTable).values({
+					userId: existingUser.id,
+					providerId: 'google',
+					providerUserId: googleUser.sub
+				});
+			}
 
 			await createAndSetSession(lucia, existingUser.id, event.cookies);
 		} else {
+			// Create a new user and their OAuth account
 			const userId = generateId(15);
 
-			// Start a new transaction to insert the new user and their OAuth account into the database
 			await database.transaction(async (trx) => {
 				await trx.insert(usersTable).values({
 					id: userId,
@@ -105,6 +120,8 @@ export const GET: RequestHandler = async (event) => {
 			}
 		});
 	} catch (error) {
+		console.error(error);
+
 		// the specific error message depends on the provider
 		if (error instanceof OAuth2RequestError) {
 			// invalid code
