@@ -78,9 +78,14 @@
 	<div class="flex-grow ml-3 border-t border-gray-500"></div>
 </div>
 
-<div>
+<div class="flex flex-wrap gap-4">
 	<Button class="w-full gap-2 font-bold" href={route('GET /auth/github')}>
 		<iconify-icon icon="mdi:github" width="25"></iconify-icon>
 		<span>Github</span>
+	</Button>
+
+	<Button class="w-full gap-2 font-bold" href={route('GET /auth/google')}>
+		<iconify-icon icon="mdi:google" width="25"></iconify-icon>
+		<span>Google</span>
 	</Button>
 </div>
