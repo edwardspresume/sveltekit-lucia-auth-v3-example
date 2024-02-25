@@ -24,7 +24,9 @@ export const oauthAccountsTable = sqliteTable(
 	{
 		userId: text('user_id')
 			.notNull()
-			.references(() => usersTable.id),
+			.references(() => usersTable.id, {
+				onDelete: 'cascade'
+			}),
 
 		providerId: text('provider_id').notNull(),
 
