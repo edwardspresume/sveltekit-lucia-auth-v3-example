@@ -22,6 +22,8 @@ import {
 const resend = new Resend(RESEND_API_KEY);
 
 export const GITHUB_OAUTH_STATE_COOKIE_NAME = 'githubOauthState';
+export const GOOGLE_OAUTH_STATE_COOKIE_NAME = 'googleOauthState';
+export const GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME = 'googleOauthCodeVerifier';
 
 export const PENDING_USER_VERIFICATION_COOKIE_NAME = 'pendingUserVerification';
 export type PendingVerificationUserDataType = {
