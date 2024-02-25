@@ -39,8 +39,10 @@ export const GET: RequestHandler = async (event) => {
 	}
 
 	try {
+		// Validate the authorization code and retrieve the tokens
 		const tokens = await githubOauth.validateAuthorizationCode(code);
 
+		// Fetch the GitHub user associated with the access token
 		const githubUserResponse = await fetch('https://api.github.com/user', {
 			headers: {
 				Authorization: `Bearer ${tokens.accessToken}`
@@ -59,9 +61,11 @@ export const GET: RequestHandler = async (event) => {
 				)
 			);
 
+		// If the user exists, create and set a new session
 		if (existingUser) {
 			await createAndSetSession(lucia, existingUser.userId, event.cookies);
 		} else {
+			// If the user doesn't exist, fetch the user's emails from GitHub
 			const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
 					Authorization: `Bearer ${tokens.accessToken}`
@@ -86,6 +90,7 @@ export const GET: RequestHandler = async (event) => {
 
 			const userId = generateId(15);
 
+			// Start a new transaction to insert the new user and their OAuth account into the database
 			await database.transaction(async (trx) => {
 				await trx.insert(usersTable).values({
 					id: userId,
