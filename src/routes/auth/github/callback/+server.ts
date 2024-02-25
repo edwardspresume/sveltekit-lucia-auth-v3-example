@@ -7,11 +7,12 @@ import { generateId } from 'lucia';
 import { route } from '$lib/ROUTES';
 import {
 	GITHUB_OAUTH_STATE_COOKIE_NAME,
-	createAndSetSession
+	createAndSetSession,
+	insertNewUser
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { githubOauth, lucia } from '$lib/database/luciaAuth.server';
-import { oauthAccountsTable, usersTable } from '$lib/database/schema';
+import { usersTable } from '$lib/database/schema';
 
 type GitHubUser = {
 	id: number;
@@ -30,7 +31,7 @@ type GitHubEmail = {
 export const GET: RequestHandler = async (event) => {
 	const code = event.url.searchParams.get('code');
 	const state = event.url.searchParams.get('state');
-	const storedState = event.cookies.get(GITHUB_OAUTH_STATE_COOKIE_NAME) ?? null;
+	const storedState = event.cookies.get(GITHUB_OAUTH_STATE_COOKIE_NAME);
 
 	if (!code || !state || !storedState || state !== storedState) {
 		return new Response(null, {
@@ -53,17 +54,17 @@ export const GET: RequestHandler = async (event) => {
 
 		const [existingUser] = await database
 			.select()
-			.from(oauthAccountsTable)
+			.from(usersTable)
 			.where(
 				and(
-					eq(oauthAccountsTable.providerId, 'github'),
-					eq(oauthAccountsTable.providerUserId, githubUser.id.toString())
+					eq(usersTable.authMethod, 'github'),
+					eq(usersTable.oauthProviderUserId, githubUser.id.toString())
 				)
 			);
 
 		// If the user exists, create and set a new session
 		if (existingUser) {
-			await createAndSetSession(lucia, existingUser.userId, event.cookies);
+			await createAndSetSession(lucia, existingUser.id, event.cookies);
 		} else {
 			// If the user doesn't exist, fetch the user's emails from GitHub
 			const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
@@ -90,22 +91,14 @@ export const GET: RequestHandler = async (event) => {
 
 			const userId = generateId(15);
 
-			// Start a new transaction to insert the new user and their OAuth account into the database
-			await database.transaction(async (trx) => {
-				await trx.insert(usersTable).values({
-					id: userId,
-					username: githubUser.login,
-					name: githubUser.name,
-					avatarUrl: githubUser.avatar_url,
-					email: primaryEmail.email,
-					isEmailVerified: true
-				});
-
-				await trx.insert(oauthAccountsTable).values({
-					userId,
-					providerId: 'github',
-					providerUserId: githubUser.id.toString()
-				});
+			await insertNewUser({
+				id: userId,
+				name: githubUser.name,
+				email: primaryEmail.email,
+				isEmailVerified: true,
+				authMethod: 'github',
+				oauthProviderUserId: githubUser.id.toString(),
+				avatarUrl: githubUser.avatar_url
 			});
 
 			await createAndSetSession(lucia, userId, event.cookies);
