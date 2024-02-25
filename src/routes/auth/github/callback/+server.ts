@@ -1,18 +1,17 @@
 import type { RequestHandler } from './$types';
 
 import { OAuth2RequestError } from 'arctic';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 
 import { route } from '$lib/ROUTES';
 import {
 	GITHUB_OAUTH_STATE_COOKIE_NAME,
-	createAndSetSession,
-	insertNewUser
+	createAndSetSession
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { githubOauth, lucia } from '$lib/database/luciaAuth.server';
-import { usersTable } from '$lib/database/schema';
+import { oauthAccountsTable, usersTable } from '$lib/database/schema';
 
 type GitHubUser = {
 	id: number;
@@ -52,11 +51,16 @@ export const GET: RequestHandler = async (event) => {
 
 		const [existingUser] = await database
 			.select()
-			.from(usersTable)
-			.where(eq(usersTable.githubId, githubUser.id));
+			.from(oauthAccountsTable)
+			.where(
+				and(
+					eq(oauthAccountsTable.providerId, 'github'),
+					eq(oauthAccountsTable.providerUserId, githubUser.id.toString())
+				)
+			);
 
 		if (existingUser) {
-			await createAndSetSession(lucia, existingUser.id, event.cookies);
+			await createAndSetSession(lucia, existingUser.userId, event.cookies);
 		} else {
 			const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
 				headers: {
@@ -66,17 +70,36 @@ export const GET: RequestHandler = async (event) => {
 
 			const githubEmail: GitHubEmail[] = await githubEmailResponse.json();
 
-			const primaryEmail = githubEmail.find((email) => email.primary && email.verified);
+			const primaryEmail = githubEmail.find((email) => email.primary) ?? null;
+
+			if (!primaryEmail) {
+				return new Response('No primary email address', {
+					status: 400
+				});
+			}
+
+			if (!primaryEmail.verified) {
+				return new Response('Unverified email', {
+					status: 400
+				});
+			}
 
 			const userId = generateId(15);
 
-			await insertNewUser({
-				id: userId,
-				githubId: githubUser.id,
-				username: githubUser.login,
-				name: githubUser.name,
-				avatarUrl: githubUser.avatar_url,
-				email: primaryEmail?.email ?? null
+			await database.transaction(async (trx) => {
+				await trx.insert(usersTable).values({
+					id: userId,
+					username: githubUser.login,
+					name: githubUser.name,
+					avatarUrl: githubUser.avatar_url,
+					email: primaryEmail.email
+				});
+
+				await trx.insert(oauthAccountsTable).values({
+					userId,
+					providerId: 'github',
+					providerUserId: githubUser.id.toString()
+				});
 			});
 
 			await createAndSetSession(lucia, userId, event.cookies);
