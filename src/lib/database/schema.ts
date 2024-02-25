@@ -14,6 +14,8 @@ export const usersTable = sqliteTable('users', {
 
 	password: text('password'),
 
+	authProviders: text('auth_providers', { mode: 'json' }).$type<string[]>().notNull(),
+
 	createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`)
 });
 
