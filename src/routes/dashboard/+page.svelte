@@ -23,7 +23,7 @@
 	<section class="flex flex-wrap items-center gap-4">
 		<Avatar.Root class="size-20">
 			<Avatar.Image src={loggedInUser.avatarUrl} alt="User Avatar" />
-			<Avatar.Fallback>
+			<Avatar.Fallback class="text-5xl">
 				{nameInitial || emailInitial}
 			</Avatar.Fallback>
 		</Avatar.Root>
