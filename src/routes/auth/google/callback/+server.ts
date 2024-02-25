@@ -8,11 +8,12 @@ import { route } from '$lib/ROUTES';
 import {
 	GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME,
 	GOOGLE_OAUTH_STATE_COOKIE_NAME,
-	createAndSetSession
+	createAndSetSession,
+	insertNewUser
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { googleOauth, lucia } from '$lib/database/luciaAuth.server';
-import { oauthAccountsTable, usersTable } from '$lib/database/schema';
+import { usersTable } from '$lib/database/schema';
 
 type GoogleUser = {
 	sub: string;
@@ -29,8 +30,8 @@ export const GET: RequestHandler = async (event) => {
 	const code = event.url.searchParams.get('code');
 	const state = event.url.searchParams.get('state');
 
-	const storedState = event.cookies.get(GOOGLE_OAUTH_STATE_COOKIE_NAME) ?? null;
-	const storedCodeVerifier = event.cookies.get(GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME) ?? null;
+	const storedState = event.cookies.get(GOOGLE_OAUTH_STATE_COOKIE_NAME);
+	const storedCodeVerifier = event.cookies.get(GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME);
 
 	if (!code || !state || !storedState || !storedCodeVerifier || state !== storedState) {
 		return new Response(null, {
@@ -50,17 +51,14 @@ export const GET: RequestHandler = async (event) => {
 
 		const [existingUser] = await database
 			.select()
-			.from(oauthAccountsTable)
+			.from(usersTable)
 			.where(
-				and(
-					eq(oauthAccountsTable.providerId, 'google'),
-					eq(oauthAccountsTable.providerUserId, googleUser.sub)
-				)
+				and(eq(usersTable.authMethod, 'google'), eq(usersTable.oauthProviderUserId, googleUser.sub))
 			);
 
 		// If the user exists, create and set a new session
 		if (existingUser) {
-			await createAndSetSession(lucia, existingUser.userId, event.cookies);
+			await createAndSetSession(lucia, existingUser.id, event.cookies);
 		} else {
 			if (!googleUser.email) {
 				return new Response('No primary email address', {
@@ -77,20 +75,14 @@ export const GET: RequestHandler = async (event) => {
 			const userId = generateId(15);
 
 			// Start a new transaction to insert the new user and their OAuth account into the database
-			await database.transaction(async (trx) => {
-				await trx.insert(usersTable).values({
-					id: userId,
-					name: googleUser.name,
-					avatarUrl: googleUser.picture,
-					email: googleUser.email,
-					isEmailVerified: true
-				});
-
-				await trx.insert(oauthAccountsTable).values({
-					userId,
-					providerId: 'google',
-					providerUserId: googleUser.sub
-				});
+			await insertNewUser({
+				id: userId,
+				name: googleUser.name,
+				email: googleUser.email,
+				isEmailVerified: true,
+				authMethod: 'google',
+				oauthProviderUserId: googleUser.sub,
+				avatarUrl: googleUser.picture
 			});
 
 			await createAndSetSession(lucia, userId, event.cookies);
