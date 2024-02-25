@@ -37,7 +37,7 @@ export const load = (async (event) => {
 	await passwordResetDashboardPageActionRateLimiter.cookieLimiter?.preflight(event);
 
 	return {
-		loggedInUserName: locals.user.name,
+		loggedInUser: locals.user,
 		allUsers: await getAllUsers(),
 		passwordResetFormData: await superValidate(PasswordResetZodSchema)
 	};
