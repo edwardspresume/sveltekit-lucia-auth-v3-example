@@ -54,7 +54,8 @@ export const actions: Actions = {
 				name: registerUserFormData.data.name,
 				email: userEmail,
 				isEmailVerified: false,
-				password: hashedPassword
+				password: hashedPassword,
+				authProviders: ['email'],
 			});
 
 			const emailVerificationCode = await generateEmailVerificationCode(userId, userEmail);
