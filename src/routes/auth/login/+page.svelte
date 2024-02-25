@@ -12,6 +12,8 @@
 		passwordResetEmailZodSchema
 	} from '$validations/AuthZodSchemas';
 
+	import OauthButtonLinks from '$components/OauthButtonLinks.svelte';
+	import OrContinueWithDivider from '$components/OrContinueWithDivider.svelte';
 	import InputField from '$components/form/InputField.svelte';
 	import SubmitButton from '$components/form/SubmitButton.svelte';
 	import { buttonVariants } from '$components/ui/button';
@@ -91,8 +93,8 @@
 		maxlength={MAX_PASSWORD_LENGTH}
 	/>
 
-	<div class="flex justify-between">
-		<SubmitButton disabled={$loginDelayed} />
+	<div class="flex flex-wrap justify-between gap-4">
+		<SubmitButton disabled={$loginDelayed} class="flex-grow">Sign in with email</SubmitButton>
 
 		<Dialog.Root>
 			<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>
@@ -127,3 +129,7 @@
 		</Dialog.Root>
 	</div>
 </form>
+
+<OrContinueWithDivider />
+
+<OauthButtonLinks />
