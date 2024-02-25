@@ -1,5 +1,5 @@
 import { sql } from 'drizzle-orm';
-import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { integer, primaryKey, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 
 export const usersTable = sqliteTable('users', {
 	id: text('id').primaryKey().notNull(),
@@ -7,10 +7,6 @@ export const usersTable = sqliteTable('users', {
 	name: text('name'),
 
 	avatarUrl: text('avatar_url'),
-
-	authMethod: text('auth_provider', { enum: ['email', 'google', 'github'] }).notNull(),
-
-	oauthProviderUserId: text('oauth_provider_user_id'),
 
 	email: text('email').unique().notNull(),
 
@@ -20,6 +16,22 @@ export const usersTable = sqliteTable('users', {
 
 	createdAt: text('created_at').default(sql`CURRENT_TIMESTAMP`)
 });
+
+export const oauthAccountsTable = sqliteTable(
+	'oauth_accounts',
+	{
+		userId: text('user_id')
+			.notNull()
+			.references(() => usersTable.id),
+
+		providerId: text('provider_id').notNull(),
+
+		providerUserId: text('provider_user_id').notNull()
+	},
+	(t) => ({
+		pk: primaryKey({ columns: [t.providerId, t.providerUserId] })
+	})
+);
 
 export const emailVerificationCodesTable = sqliteTable('email_verification_codes', {
 	id: integer('id', { mode: 'number' }).primaryKey({ autoIncrement: true }),
