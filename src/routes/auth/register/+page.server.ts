@@ -52,7 +52,6 @@ export const actions: Actions = {
 			await insertNewUser({
 				id: userId,
 				name: registerUserFormData.data.name,
-				authMethod: 'email',
 				email: userEmail,
 				isEmailVerified: false,
 				password: hashedPassword
