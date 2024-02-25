@@ -74,7 +74,6 @@ export const GET: RequestHandler = async (event) => {
 
 			const userId = generateId(15);
 
-			// Start a new transaction to insert the new user and their OAuth account into the database
 			await insertNewUser({
 				id: userId,
 				name: googleUser.name,
