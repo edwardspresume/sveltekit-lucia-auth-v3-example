@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 
 import { OAuth2RequestError } from 'arctic';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 
 import { route } from '$lib/ROUTES';
@@ -49,7 +49,7 @@ export const GET: RequestHandler = async (event) => {
 			}
 		});
 
-		// If the user doesn't exist, fetch the user's emails from GitHub
+		// Fetch the primary email address of the GitHub user
 		const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
 			headers: {
 				Authorization: `Bearer ${tokens.accessToken}`
@@ -73,24 +73,38 @@ export const GET: RequestHandler = async (event) => {
 			});
 		}
 
+		// Check if the user already exists
 		const [existingUser] = await database
 			.select()
 			.from(usersTable)
 			.where(eq(usersTable.email, primaryEmail.email));
 
-		// If the user exists, create and set a new session
 		if (existingUser) {
-			await database.insert(oauthAccountsTable).values({
-				userId: existingUser.id,
-				providerId: 'github',
-				providerUserId: githubUser.id.toString()
-			});
+			// Check if the user already has a GitHub OAuth account linked
+			const [existingOauthAccount] = await database
+				.select()
+				.from(oauthAccountsTable)
+				.where(
+					and(
+						eq(oauthAccountsTable.userId, existingUser.id),
+						eq(oauthAccountsTable.providerId, 'github')
+					)
+				);
+
+			if (!existingOauthAccount) {
+				// Link the GitHub OAuth account to the existing user
+				await database.insert(oauthAccountsTable).values({
+					userId: existingUser.id,
+					providerId: 'github',
+					providerUserId: githubUser.id.toString()
+				});
+			}
 
 			await createAndSetSession(lucia, existingUser.id, event.cookies);
 		} else {
+			// Create a new user and link the GitHub OAuth account
 			const userId = generateId(15);
 
-			// Start a new transaction to insert the new user and their OAuth account into the database
 			await database.transaction(async (trx) => {
 				await trx.insert(usersTable).values({
 					id: userId,
@@ -117,6 +131,8 @@ export const GET: RequestHandler = async (event) => {
 			}
 		});
 	} catch (error) {
+		console.error(error);
+
 		// the specific error message depends on the provider
 		if (error instanceof OAuth2RequestError) {
 			// invalid code
