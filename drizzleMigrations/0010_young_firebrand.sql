@@ -1,0 +1,1 @@
+ALTER TABLE `users` RENAME COLUMN `auth_providers` TO `auth_methods`;

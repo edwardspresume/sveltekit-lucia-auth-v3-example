@@ -71,6 +71,13 @@
       "when": 1708865966724,
       "tag": "0009_aberrant_randall",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1708869071402,
+      "tag": "0010_young_firebrand",
+      "breakpoints": true
     }
   ]
 }
