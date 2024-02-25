@@ -55,7 +55,7 @@ export const actions: Actions = {
 				email: userEmail,
 				isEmailVerified: false,
 				password: hashedPassword,
-				authProviders: ['email'],
+				authMethods: ['email'],
 			});
 
 			const emailVerificationCode = await generateEmailVerificationCode(userId, userEmail);

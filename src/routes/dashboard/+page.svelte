@@ -16,7 +16,7 @@
 	const nameInitial = loggedInUser.name?.charAt(0).toUpperCase();
 	const emailInitial = loggedInUser.email.charAt(0).toUpperCase();
 
-	const isOnlyOauthUser = !loggedInUser.authProviders.includes('email');
+	const isOnlyOauthUser = !loggedInUser.authMethods.includes('email');
 </script>
 
 <div>

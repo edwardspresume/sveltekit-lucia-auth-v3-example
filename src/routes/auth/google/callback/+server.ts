@@ -81,9 +81,9 @@ export const GET: RequestHandler = async (event) => {
 				);
 
 			if (!existingOauthAccount) {
-				// Add the 'google' auth provider to the user's authProviders list
-				const authProviders = existingUser.authProviders || [];
-				authProviders.push('google');
+				// Add the 'google' auth provider to the user's authMethods list
+				const authMethods = existingUser.authMethods || [];
+				authMethods.push('google');
 
 				await database.transaction(async (trx) => {
 					// Link the Google OAuth account to the existing user
@@ -93,11 +93,11 @@ export const GET: RequestHandler = async (event) => {
 						providerUserId: googleUser.sub
 					});
 
-					// Update the user's authProviders list
+					// Update the user's authMethods list
 					await trx
 						.update(usersTable)
 						.set({
-							authProviders
+							authMethods
 						})
 						.where(eq(usersTable.id, existingUser.id));
 				});
@@ -115,7 +115,7 @@ export const GET: RequestHandler = async (event) => {
 					avatarUrl: googleUser.picture,
 					email: googleUser.email,
 					isEmailVerified: true,
-					authProviders: ['google']
+					authMethods: ['google']
 				});
 
 				await trx.insert(oauthAccountsTable).values({

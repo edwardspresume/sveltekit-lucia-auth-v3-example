@@ -92,9 +92,9 @@ export const GET: RequestHandler = async (event) => {
 				);
 
 			if (!existingOauthAccount) {
-				// Add the 'github' auth provider to the user's authProviders list
-				const authProviders = existingUser.authProviders || [];
-				authProviders.push('github');
+				// Add the 'github' auth provider to the user's authMethods list
+				const authMethods = existingUser.authMethods || [];
+				authMethods.push('github');
 
 				await database.transaction(async (trx) => {
 					// Link the GitHub OAuth account to the existing user
@@ -104,11 +104,11 @@ export const GET: RequestHandler = async (event) => {
 						providerUserId: githubUser.id.toString()
 					});
 
-					// Update the user's authProviders list
+					// Update the user's authMethods list
 					await trx
 						.update(usersTable)
 						.set({
-							authProviders
+							authMethods
 						})
 						.where(eq(usersTable.id, existingUser.id));
 				});
@@ -126,7 +126,7 @@ export const GET: RequestHandler = async (event) => {
 					avatarUrl: githubUser.avatar_url,
 					email: primaryEmail.email,
 					isEmailVerified: true,
-					authProviders: ['github']
+					authMethods: ['github']
 				});
 
 				await trx.insert(oauthAccountsTable).values({

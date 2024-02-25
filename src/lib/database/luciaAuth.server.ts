@@ -32,7 +32,7 @@ export const lucia = new Lucia(dbAdapter, {
 			name: attributes.name,
 			email: attributes.email,
 			isEmailVerified: attributes.isEmailVerified,
-			authProviders: attributes.authProviders,
+			authMethods: attributes.authMethods,
 			avatarUrl: attributes.avatarUrl
 		};
 	}
@@ -45,7 +45,7 @@ declare module 'lucia' {
 			name: string;
 			email: string;
 			isEmailVerified: boolean;
-			authProviders: string[];
+			authMethods: string[];
 			avatarUrl: string;
 		};
 	}
