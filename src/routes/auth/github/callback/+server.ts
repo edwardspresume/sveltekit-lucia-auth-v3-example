@@ -49,7 +49,7 @@ export const GET: RequestHandler = async (event) => {
 			}
 		});
 
-		const githubUser: GitHubUser = await githubUserResponse.json();
+		const githubUser = (await githubUserResponse.json()) as GitHubUser;
 
 		const [existingUser] = await database
 			.select()
@@ -72,7 +72,7 @@ export const GET: RequestHandler = async (event) => {
 				}
 			});
 
-			const githubEmail: GitHubEmail[] = await githubEmailResponse.json();
+			const githubEmail = (await githubEmailResponse.json()) as GitHubEmail[];
 
 			const primaryEmail = githubEmail.find((email) => email.primary) ?? null;
 
