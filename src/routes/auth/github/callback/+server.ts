@@ -1,18 +1,17 @@
 import type { RequestHandler } from './$types';
 
 import { OAuth2RequestError } from 'arctic';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 
 import { route } from '$lib/ROUTES';
 import {
 	GITHUB_OAUTH_STATE_COOKIE_NAME,
-	createAndSetSession,
-	insertNewUser
+	createAndSetSession
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { githubOauth, lucia } from '$lib/database/luciaAuth.server';
-import { usersTable } from '$lib/database/schema';
+import { oauthAccountsTable, usersTable } from '$lib/database/schema';
 
 type GitHubUser = {
 	id: number;
@@ -50,55 +49,62 @@ export const GET: RequestHandler = async (event) => {
 			}
 		});
 
+		// If the user doesn't exist, fetch the user's emails from GitHub
+		const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
+			headers: {
+				Authorization: `Bearer ${tokens.accessToken}`
+			}
+		});
+
 		const githubUser = (await githubUserResponse.json()) as GitHubUser;
+		const githubEmail = (await githubEmailResponse.json()) as GitHubEmail[];
+
+		const primaryEmail = githubEmail.find((email) => email.primary) ?? null;
+
+		if (!primaryEmail) {
+			return new Response('No primary email address', {
+				status: 400
+			});
+		}
+
+		if (!primaryEmail.verified) {
+			return new Response('Unverified email', {
+				status: 400
+			});
+		}
 
 		const [existingUser] = await database
 			.select()
 			.from(usersTable)
-			.where(
-				and(
-					eq(usersTable.authMethod, 'github'),
-					eq(usersTable.oauthProviderUserId, githubUser.id.toString())
-				)
-			);
+			.where(eq(usersTable.email, primaryEmail.email));
 
 		// If the user exists, create and set a new session
 		if (existingUser) {
-			await createAndSetSession(lucia, existingUser.id, event.cookies);
-		} else {
-			// If the user doesn't exist, fetch the user's emails from GitHub
-			const githubEmailResponse = await fetch('https://api.github.com/user/emails', {
-				headers: {
-					Authorization: `Bearer ${tokens.accessToken}`
-				}
+			await database.insert(oauthAccountsTable).values({
+				userId: existingUser.id,
+				providerId: 'github',
+				providerUserId: githubUser.id.toString()
 			});
 
-			const githubEmail = (await githubEmailResponse.json()) as GitHubEmail[];
-
-			const primaryEmail = githubEmail.find((email) => email.primary) ?? null;
-
-			if (!primaryEmail) {
-				return new Response('No primary email address', {
-					status: 400
-				});
-			}
-
-			if (!primaryEmail.verified) {
-				return new Response('Unverified email', {
-					status: 400
-				});
-			}
-
+			await createAndSetSession(lucia, existingUser.id, event.cookies);
+		} else {
 			const userId = generateId(15);
 
-			await insertNewUser({
-				id: userId,
-				name: githubUser.name,
-				email: primaryEmail.email,
-				isEmailVerified: true,
-				authMethod: 'github',
-				oauthProviderUserId: githubUser.id.toString(),
-				avatarUrl: githubUser.avatar_url
+			// Start a new transaction to insert the new user and their OAuth account into the database
+			await database.transaction(async (trx) => {
+				await trx.insert(usersTable).values({
+					id: userId,
+					name: githubUser.name,
+					avatarUrl: githubUser.avatar_url,
+					email: primaryEmail.email,
+					isEmailVerified: true
+				});
+
+				await trx.insert(oauthAccountsTable).values({
+					userId,
+					providerId: 'github',
+					providerUserId: githubUser.id.toString()
+				});
 			});
 
 			await createAndSetSession(lucia, userId, event.cookies);

@@ -1,19 +1,18 @@
 import type { RequestHandler } from './$types';
 
 import { OAuth2RequestError } from 'arctic';
-import { and, eq } from 'drizzle-orm';
+import { eq } from 'drizzle-orm';
 import { generateId } from 'lucia';
 
 import { route } from '$lib/ROUTES';
 import {
 	GOOGLE_OAUTH_CODE_VERIFIER_COOKIE_NAME,
 	GOOGLE_OAUTH_STATE_COOKIE_NAME,
-	createAndSetSession,
-	insertNewUser
+	createAndSetSession
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { googleOauth, lucia } from '$lib/database/luciaAuth.server';
-import { usersTable } from '$lib/database/schema';
+import { oauthAccountsTable, usersTable } from '$lib/database/schema';
 
 type GoogleUser = {
 	sub: string;
@@ -41,6 +40,7 @@ export const GET: RequestHandler = async (event) => {
 
 	try {
 		const tokens = await googleOauth.validateAuthorizationCode(code, storedCodeVerifier);
+
 		const googleUserResponse = await fetch('https://openidconnect.googleapis.com/v1/userinfo', {
 			headers: {
 				Authorization: `Bearer ${tokens.accessToken}`
@@ -49,39 +49,50 @@ export const GET: RequestHandler = async (event) => {
 
 		const googleUser = (await googleUserResponse.json()) as GoogleUser;
 
+		if (!googleUser.email) {
+			return new Response('No primary email address', {
+				status: 400
+			});
+		}
+
+		if (!googleUser.email_verified) {
+			return new Response('Unverified email', {
+				status: 400
+			});
+		}
+
 		const [existingUser] = await database
 			.select()
 			.from(usersTable)
-			.where(
-				and(eq(usersTable.authMethod, 'google'), eq(usersTable.oauthProviderUserId, googleUser.sub))
-			);
+			.where(eq(usersTable.email, googleUser.email));
 
 		// If the user exists, create and set a new session
 		if (existingUser) {
+			await database.insert(oauthAccountsTable).values({
+				userId: existingUser.id,
+				providerId: 'google',
+				providerUserId: googleUser.sub
+			});
+
 			await createAndSetSession(lucia, existingUser.id, event.cookies);
 		} else {
-			if (!googleUser.email) {
-				return new Response('No primary email address', {
-					status: 400
-				});
-			}
-
-			if (!googleUser.email_verified) {
-				return new Response('Unverified email', {
-					status: 400
-				});
-			}
-
 			const userId = generateId(15);
 
-			await insertNewUser({
-				id: userId,
-				name: googleUser.name,
-				email: googleUser.email,
-				isEmailVerified: true,
-				authMethod: 'google',
-				oauthProviderUserId: googleUser.sub,
-				avatarUrl: googleUser.picture
+			// Start a new transaction to insert the new user and their OAuth account into the database
+			await database.transaction(async (trx) => {
+				await trx.insert(usersTable).values({
+					id: userId,
+					name: googleUser.name,
+					avatarUrl: googleUser.picture,
+					email: googleUser.email,
+					isEmailVerified: true
+				});
+
+				await trx.insert(oauthAccountsTable).values({
+					userId,
+					providerId: 'google',
+					providerUserId: googleUser.sub
+				});
 			});
 
 			await createAndSetSession(lucia, userId, event.cookies);
