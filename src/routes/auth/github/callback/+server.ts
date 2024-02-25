@@ -97,7 +97,8 @@ export const GET: RequestHandler = async (event) => {
 					username: githubUser.login,
 					name: githubUser.name,
 					avatarUrl: githubUser.avatar_url,
-					email: primaryEmail.email
+					email: primaryEmail.email,
+					isEmailVerified: true
 				});
 
 				await trx.insert(oauthAccountsTable).values({
