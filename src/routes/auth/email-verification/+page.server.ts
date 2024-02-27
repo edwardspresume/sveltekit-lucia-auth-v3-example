@@ -96,17 +96,26 @@ export const actions: Actions = {
 			});
 		}
 
+		await database.transaction(async (trx) => {
+			const [existingUser] = await trx
+				.select()
+				.from(usersTable)
+				.where(eq(usersTable.email, userData.email));
+
+			const authMethods = existingUser?.authMethods ?? [];
+			authMethods.push('email');
+
+			await trx
+				.update(usersTable)
+				.set({ isEmailVerified: true, authMethods })
+				.where(eq(usersTable.email, userData.email));
+		});
+		await createAndSetSession(lucia, userData.id, cookies);
+
 		cookies.set(PENDING_USER_VERIFICATION_COOKIE_NAME, '', {
 			maxAge: 0,
 			path: route('/auth/email-verification')
 		});
-
-		await database
-			.update(usersTable)
-			.set({ isEmailVerified: true })
-			.where(eq(usersTable.email, userData.email));
-
-		await createAndSetSession(lucia, userData.id, cookies);
 
 		throw redirect(303, DASHBOARD_ROUTE);
 	},
