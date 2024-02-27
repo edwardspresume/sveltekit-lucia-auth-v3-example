@@ -1,7 +1,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-import { message, setError, superValidate } from 'sveltekit-superforms/server';
+import { message, superValidate } from 'sveltekit-superforms/server';
 
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
@@ -39,24 +39,33 @@ export const actions: Actions = {
 		}
 
 		try {
-			const isEmailAlreadyRegistered = await checkIfUserExists(registerUserFormData.data.email);
+			const userEmail = registerUserFormData.data.email;
+			const existingUser = await checkIfUserExists(userEmail);
 
-			if (isEmailAlreadyRegistered) {
-				return setError(registerUserFormData, 'email', 'Email already registered');
+			// If there is a user and they're using email auth, we don't want to create a new user
+			if (existingUser && existingUser.authMethods.includes('email')) {
+				return message(registerUserFormData, {
+					alertType: 'error',
+					alertText: 'This email is already in use. Please use a different email address.'
+				});
 			}
 
-			const userId = generateId(15);
-			const userEmail = registerUserFormData.data.email;
-			const hashedPassword = await new Argon2id().hash(registerUserFormData.data.password);
+			let userId = existingUser?.id ?? generateId(15);
 
-			await insertNewUser({
-				id: userId,
-				name: registerUserFormData.data.name,
-				email: userEmail,
-				isEmailVerified: false,
-				password: hashedPassword,
-				authMethods: ['email'],
-			});
+			// if theres no user with the email, create a new user
+			if (!existingUser) {
+				userId = generateId(15);
+				const hashedPassword = await new Argon2id().hash(registerUserFormData.data.password);
+
+				await insertNewUser({
+					id: userId,
+					name: registerUserFormData.data.name,
+					email: userEmail,
+					isEmailVerified: false,
+					password: hashedPassword,
+					authMethods: ['email']
+				});
+			}
 
 			const emailVerificationCode = await generateEmailVerificationCode(userId, userEmail);
 
