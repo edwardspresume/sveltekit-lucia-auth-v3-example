@@ -14,9 +14,12 @@ import {
 	insertNewUser,
 	sendEmailVerificationCode
 } from '$lib/database/authUtils.server';
+import { database } from '$lib/database/database.server';
+import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
+import { eq } from 'drizzle-orm';
 
 export const load = (async () => {
 	return {
@@ -50,13 +53,11 @@ export const actions: Actions = {
 				});
 			}
 
-			let userId = existingUser?.id ?? generateId(15);
+			const userId = existingUser?.id ?? generateId(15);
+			const hashedPassword = await new Argon2id().hash(registerUserFormData.data.password);
 
 			// if theres no user with the email, create a new user
 			if (!existingUser) {
-				userId = generateId(15);
-				const hashedPassword = await new Argon2id().hash(registerUserFormData.data.password);
-
 				await insertNewUser({
 					id: userId,
 					name: registerUserFormData.data.name,
@@ -65,6 +66,13 @@ export const actions: Actions = {
 					password: hashedPassword,
 					authMethods: ['email']
 				});
+			} else {
+				await database
+					.update(usersTable)
+					.set({
+						password: hashedPassword
+					})
+					.where(eq(usersTable.email, userEmail));
 			}
 
 			const emailVerificationCode = await generateEmailVerificationCode(userId, userEmail);
