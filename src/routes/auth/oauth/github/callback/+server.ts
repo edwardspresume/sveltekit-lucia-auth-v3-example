@@ -86,8 +86,8 @@ export const GET: RequestHandler = async (event) => {
 				.from(oauthAccountsTable)
 				.where(
 					and(
-						eq(oauthAccountsTable.userId, existingUser.id),
-						eq(oauthAccountsTable.providerId, 'github')
+						eq(oauthAccountsTable.providerId, 'github'),
+						eq(oauthAccountsTable.providerUserId, githubUser.id.toString())
 					)
 				);
 

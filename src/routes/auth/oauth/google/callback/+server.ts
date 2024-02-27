@@ -75,8 +75,8 @@ export const GET: RequestHandler = async (event) => {
 				.from(oauthAccountsTable)
 				.where(
 					and(
-						eq(oauthAccountsTable.userId, existingUser.id),
-						eq(oauthAccountsTable.providerId, 'google')
+						eq(oauthAccountsTable.providerId, 'google'),
+						eq(oauthAccountsTable.providerUserId, googleUser.sub)
 					)
 				);
 
