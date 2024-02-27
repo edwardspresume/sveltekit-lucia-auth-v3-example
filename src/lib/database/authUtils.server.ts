@@ -106,7 +106,8 @@ export const checkIfUserExists = async (email: string) => {
 			id: usersTable.id,
 			email: usersTable.email,
 			password: usersTable.password,
-			isEmailVerified: usersTable.isEmailVerified
+			isEmailVerified: usersTable.isEmailVerified,
+			authMethods: usersTable.authMethods
 		})
 		.from(usersTable)
 		.where(eq(usersTable.email, email));
