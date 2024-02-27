@@ -15,7 +15,7 @@ import { usersSessionsTable, usersTable } from './schema';
 
 const dbAdapter = new DrizzleSQLiteAdapter(database, usersSessionsTable, usersTable);
 
-const googleRedirectUrl = `http://localhost:5173/auth/google/callback`;
+const googleRedirectUrl = `http://localhost:5173/auth/oauth/google/callback`;
 
 export const githubOauth = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET);
 export const googleOauth = new Google(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, googleRedirectUrl);
