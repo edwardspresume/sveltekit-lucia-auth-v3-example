@@ -7,6 +7,7 @@ This example project showcases how to integrate Lucia V3 for user authentication
 - [Main Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/main)
 - [Email Verification Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/email_verification)
 - [Password Reset Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/password_reset)
+- [Oauth & account linking Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/oauth)
 
 For a guide on how to implement these features, check out the video tutorial series: [Lucia Auth V3 with SvelteKit](https://youtube.com/playlist?list=PL-thR8qW-CU3ZmizJqrSAatWHh6z_JnS7&si=Qage2gw2mJarmZk4).
 
