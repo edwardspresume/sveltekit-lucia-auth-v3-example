@@ -29,6 +29,12 @@ export const mainNavLinks = {
 		ariaLabel: 'Go to home page'
 	}),
 
+	tasks: createNavLink({
+		title: 'Tasks',
+		href: route('/tasks'),
+		ariaLabel: 'Go to tasks'
+	}),
+
 	dashboard: createNavLink({
 		title: 'Dashboard',
 		href: route('/dashboard'),

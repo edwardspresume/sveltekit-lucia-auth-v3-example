@@ -34,6 +34,7 @@
 
 	const noneSessionLinks = {
 		home: mainNavLinks.home,
+		tasks: mainNavLinks.tasks,
 		dashboard: mainNavLinks.dashboard,
 		login: mainNavLinks.login,
 		register: mainNavLinks.register
