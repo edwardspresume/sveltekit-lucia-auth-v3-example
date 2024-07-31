@@ -3,20 +3,61 @@
 
 	import { route } from '$lib/ROUTES';
 
+	import PasswordResetForm from '$components/form/PasswordResetForm.svelte';
 	import SubmitButton from '$components/form/SubmitButton.svelte';
+	import * as Avatar from '$components/ui/avatar';
+	import { buttonVariants } from '$components/ui/button';
+	import * as Dialog from '$components/ui/dialog';
 
 	export let data: PageData;
+
+	const { loggedInUser } = data;
+
+	const nameInitial = loggedInUser.name?.charAt(0).toUpperCase();
+	const emailInitial = loggedInUser.email.charAt(0).toUpperCase();
+
+	const isOnlyOauthUser = !loggedInUser.authMethods.includes('email');
 </script>
 
 <div>
-	<section>
-		<h1 class="mb-5 text-2xl">
-			Hello <span class="font-bold">{data.loggedInUserName}</span>
-		</h1>
+	<section class="flex flex-wrap items-center gap-4">
+		<Avatar.Root class="size-20">
+			<Avatar.Image src={loggedInUser.avatarUrl} alt="User Avatar" />
+			<Avatar.Fallback class="text-5xl">
+				{nameInitial || emailInitial}
+			</Avatar.Fallback>
+		</Avatar.Root>
 
-		<form method="post" action={route('logout /dashboard')}>
-			<SubmitButton>Logout</SubmitButton>
-		</form>
+		<div>
+			<h1 class="mb-5 text-2xl">
+				Hello <span class="font-bold">{loggedInUser.name || loggedInUser.email}</span>
+			</h1>
+
+			<div class="flex gap-2">
+				<form method="post" action={route('logout /dashboard')}>
+					<SubmitButton>Logout</SubmitButton>
+				</form>
+
+				{#if isOnlyOauthUser === false}
+					<Dialog.Root>
+						<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>
+							Change Password
+						</Dialog.Trigger>
+						<Dialog.Content>
+							<Dialog.Header>
+								<Dialog.Title>Password Change</Dialog.Title>
+								<Dialog.Description>Please enter your new password.</Dialog.Description>
+							</Dialog.Header>
+
+							<PasswordResetForm
+								formData={data.passwordResetFormData}
+								formAction={route('changePassword /dashboard')}
+							/>
+						</Dialog.Content>
+					</Dialog.Root>
+				{/if}
+			</div>
+		</div>
 	</section>
 
 	<hr class="my-8" />
@@ -26,7 +67,7 @@
 			<h2 class="text-xl font-bold leading-none">List of all register users</h2>
 
 			<form method="post" action={route('deleteAllUsers /dashboard')}>
-				<SubmitButton>Delete all users</SubmitButton>
+				<SubmitButton class="bg-destructive">Delete all users</SubmitButton>
 			</form>
 		</header>
 

@@ -1,7 +1,7 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 
-import { deleteSessionCookie } from '$lib/database/authUtils.server';
 import { lucia } from '$lib/database/luciaAuth.server';
+import { deleteSessionCookie } from '$lib/database/authUtils.server';
 import { AUTH_ROUTES, DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 
 export const handle: Handle = async ({ event, resolve }) => {

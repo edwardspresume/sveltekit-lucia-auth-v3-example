@@ -12,6 +12,8 @@
 		RegisterUserZodSchema
 	} from '$validations/AuthZodSchemas';
 
+	import OauthButtonLinks from '$components/OauthButtonLinks.svelte';
+	import OrContinueWithDivider from '$components/OrContinueWithDivider.svelte';
 	import InputField from '$components/form/InputField.svelte';
 	import SubmitButton from '$components/form/SubmitButton.svelte';
 
@@ -68,5 +70,9 @@
 		maxlength={MAX_PASSWORD_LENGTH}
 	/>
 
-	<SubmitButton />
+	<SubmitButton class="w-full">Sign up with email</SubmitButton>
 </form>
+
+<OrContinueWithDivider />
+
+<OauthButtonLinks />

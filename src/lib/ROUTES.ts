@@ -10,8 +10,10 @@
  */
 const PAGES = {
   "/": `/`,
+  "/auth/email-verification": `/auth/email-verification`,
   "/auth/login": `/auth/login`,
   "/auth/register": `/auth/register`,
+  "/auth/reset-password": `/auth/reset-password`,
   "/dashboard": `/dashboard`
 }
 
@@ -19,16 +21,24 @@ const PAGES = {
  * SERVERS
  */
 const SERVERS = {
-  
+  "GET /auth/oauth/github": `/auth/oauth/github`,
+  "GET /auth/oauth/github/callback": `/auth/oauth/github/callback`,
+  "GET /auth/oauth/google": `/auth/oauth/google`,
+  "GET /auth/oauth/google/callback": `/auth/oauth/google/callback`
 }
 
 /**
  * ACTIONS
  */
 const ACTIONS = {
+  "verifyCode /auth/email-verification": `/auth/email-verification?/verifyCode`,
+  "sendNewCode /auth/email-verification": `/auth/email-verification?/sendNewCode`,
   "logInUser /auth/login": `/auth/login?/logInUser`,
+  "sendPasswordResetEmail /auth/login": `/auth/login?/sendPasswordResetEmail`,
   "registerUser /auth/register": `/auth/register?/registerUser`,
+  "resetPassword /auth/reset-password": `/auth/reset-password?/resetPassword`,
   "logout /dashboard": `/dashboard?/logout`,
+  "changePassword /dashboard": `/dashboard?/changePassword`,
   "deleteAllUsers /dashboard": `/dashboard?/deleteAllUsers`
 }
 
@@ -115,9 +125,9 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = { 
-  PAGES: { '/': never, '/auth/login': never, '/auth/register': never, '/dashboard': never }
-  SERVERS: Record<string, never>
-  ACTIONS: { 'logInUser /auth/login': never, 'registerUser /auth/register': never, 'logout /dashboard': never, 'deleteAllUsers /dashboard': never }
+  PAGES: { '/': never, '/auth/email-verification': never, '/auth/login': never, '/auth/register': never, '/auth/reset-password': never, '/dashboard': never }
+  SERVERS: { 'GET /auth/oauth/github': never, 'GET /auth/oauth/github/callback': never, 'GET /auth/oauth/google': never, 'GET /auth/oauth/google/callback': never }
+  ACTIONS: { 'verifyCode /auth/email-verification': never, 'sendNewCode /auth/email-verification': never, 'logInUser /auth/login': never, 'sendPasswordResetEmail /auth/login': never, 'registerUser /auth/register': never, 'resetPassword /auth/reset-password': never, 'logout /dashboard': never, 'changePassword /dashboard': never, 'deleteAllUsers /dashboard': never }
   LINKS: Record<string, never>
   Params: Record<string, never>
 }

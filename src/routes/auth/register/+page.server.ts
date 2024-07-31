@@ -1,18 +1,25 @@
 import { redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 
-import { message, setError, superValidate } from 'sveltekit-superforms/server';
+import { message, superValidate } from 'sveltekit-superforms/server';
 
-import { lucia } from '$lib/database/luciaAuth.server';
 import { generateId } from 'lucia';
 import { Argon2id } from 'oslo/password';
 
-import { createAndSetSession } from '$lib/database/authUtils.server';
-import { checkIfEmailExists, insertNewUser } from '$lib/database/databaseUtils.server';
+import { route } from '$lib/ROUTES';
+import {
+	PENDING_USER_VERIFICATION_COOKIE_NAME,
+	checkIfUserExists,
+	generateEmailVerificationCode,
+	insertNewUser,
+	sendEmailVerificationCode
+} from '$lib/database/authUtils.server';
+import { database } from '$lib/database/database.server';
+import { usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
-import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
+import { eq } from 'drizzle-orm';
 
 export const load = (async () => {
 	return {
@@ -35,23 +42,58 @@ export const actions: Actions = {
 		}
 
 		try {
-			const isEmailAlreadyRegistered = await checkIfEmailExists(registerUserFormData.data.email);
+			const userEmail = registerUserFormData.data.email;
+			const existingUser = await checkIfUserExists(userEmail);
 
-			if (isEmailAlreadyRegistered === true) {
-				return setError(registerUserFormData, 'email', 'Email already registered');
+			// If there is a user and they're using email auth, we don't want to create a new user
+			if (existingUser && existingUser.authMethods.includes('email')) {
+				return message(registerUserFormData, {
+					alertType: 'error',
+					alertText: 'This email is already in use. Please use a different email address.'
+				});
 			}
 
-			const userId = generateId(15);
+			const userId = existingUser?.id ?? generateId(15);
 			const hashedPassword = await new Argon2id().hash(registerUserFormData.data.password);
 
-			await insertNewUser({
-				id: userId,
-				name: registerUserFormData.data.name,
-				email: registerUserFormData.data.email,
-				password: hashedPassword
-			});
+			// if theres no user with the email, create a new user
+			if (!existingUser) {
+				await insertNewUser({
+					id: userId,
+					name: registerUserFormData.data.name,
+					email: userEmail,
+					isEmailVerified: false,
+					password: hashedPassword,
+					authMethods: ['email']
+				});
+			} else {
+				await database
+					.update(usersTable)
+					.set({
+						password: hashedPassword
+					})
+					.where(eq(usersTable.email, userEmail));
+			}
 
-			await createAndSetSession(lucia, userId, cookies);
+			const emailVerificationCode = await generateEmailVerificationCode(userId, userEmail);
+
+			const sendEmailVerificationCodeResult = await sendEmailVerificationCode(
+				userEmail,
+				emailVerificationCode
+			);
+
+			if (!sendEmailVerificationCodeResult.success) {
+				return message(registerUserFormData, {
+					alertType: 'error',
+					alertText: sendEmailVerificationCodeResult.message
+				});
+			}
+
+			const pendingVerificationUserData = JSON.stringify({ id: userId, email: userEmail });
+
+			cookies.set(PENDING_USER_VERIFICATION_COOKIE_NAME, pendingVerificationUserData, {
+				path: route('/auth/email-verification')
+			});
 		} catch (error) {
 			logError(error);
 
@@ -61,6 +103,6 @@ export const actions: Actions = {
 			});
 		}
 
-		throw redirect(303, DASHBOARD_ROUTE);
+		throw redirect(303, route('/auth/email-verification'));
 	}
 };
