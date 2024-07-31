@@ -17,22 +17,24 @@ For a guide on how to implement these features, check out the video tutorial ser
 
 ## Setup
 
-1. **Install Dependencies**: Run the following command to install the project dependencies:
+1. **Database folder** Create a `/localDB` folder in the root of the project which will contain the database file `sqlite.db`
+
+2. **Install Dependencies**: Run the following command to install the project dependencies:
 
    ```zsh
    pnpm install
    ```
 
-2. **Environment Variables**: Create a `.env` file in the root directory of the project. Use the `.env.example` file as a reference.
+3. **Environment Variables**: Create a `.env` file in the root directory of the project. Use the `.env.example` file as a reference.
 
-3. **Database Setup**: Run the following commands to set up the database:
+4. **Database Setup**: Run the following commands to set up the database:
 
    ```zsh
    pnpm db:generate
    pnpm db:push
    ```
 
-4. **Run the Project**: Run the following command to start the development server:
+5. **Run the Project**: Run the following command to start the development server:
 
    ```zsh
    pnpm dev
