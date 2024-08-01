@@ -11,6 +11,9 @@ importers:
       '@lucia-auth/adapter-drizzle':
         specifier: ^1.0.2
         version: 1.0.2(lucia@3.0.1)
+      '@prisma/client':
+        specifier: ^5.17.0
+        version: 5.17.0
       arctic:
         specifier: ^1.2.0
         version: 1.2.0
@@ -34,10 +37,10 @@ importers:
         version: 16.4.5
       drizzle-orm:
         specifier: ^0.32.1
-        version: 0.32.1(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0)
+        version: 0.32.1(@prisma/client@5.17.0)(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0)
       drizzle-zod:
         specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.32.1(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0))(zod@3.23.8)
+        version: 0.5.1(drizzle-orm@0.32.1(@prisma/client@5.17.0)(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0))(zod@3.23.8)
       just-extend:
         specifier: ^6.2.0
         version: 6.2.0
@@ -45,8 +48,8 @@ importers:
         specifier: ^3.0.1
         version: 3.0.1
       lucide-svelte:
-        specifier: ^0.418.0
-        version: 0.418.0(svelte@4.2.12)
+        specifier: ^0.419.0
+        version: 0.419.0(svelte@4.2.12)
       mode-watcher:
         specifier: ^0.4.1
         version: 0.4.1(svelte@4.2.12)
@@ -1400,6 +1403,15 @@ packages:
   '@poppinss/macroable@1.0.2':
     resolution: {integrity: sha512-xhhEcEvhQC8mP5oOr5hbE4CmUgmw/IPV1jhpGg2xSkzoFrt9i8YVqBQt9744EFesi5F7pBheWozg63RUBM/5JA==}
     engines: {node: '>=18.16.0'}
+
+  '@prisma/client@5.17.0':
+    resolution: {integrity: sha512-N2tnyKayT0Zf7mHjwEyE8iG7FwTmXDHFZ1GnNhQp0pJUObsuel4ZZ1XwfuAYkq5mRIiC/Kot0kt0tGCfLJ70Jw==}
+    engines: {node: '>=16.13'}
+    peerDependencies:
+      prisma: '*'
+    peerDependenciesMeta:
+      prisma:
+        optional: true
 
   '@react-email/render@0.0.12':
     resolution: {integrity: sha512-S8WRv/PqECEi6x0QJBj0asnAb5GFtJaHlnByxLETLkgJjc76cxMYDH4r9wdbuJ4sjkcbpwP3LPnVzwS+aIjT7g==}
@@ -2947,8 +2959,8 @@ packages:
   lucia@3.0.1:
     resolution: {integrity: sha512-srwUkTCGgr6N4mFpaKZVZy5kwiRZdsrbIDv9Wrjar+xyw1MjojYQQ7oRbegjRWOZ3yI8xOOclK3sz/rga2J7/w==}
 
-  lucide-svelte@0.418.0:
-    resolution: {integrity: sha512-kQBuv2PFVmRqd2GSTmRwG8lZBi3w9iYIDeEm789VtnmgXS0gzZaTazdrCRfRIcLT1XEdJUi2lD1G1C8ACMy5DQ==}
+  lucide-svelte@0.419.0:
+    resolution: {integrity: sha512-kkw2JSYIMGWFlYmXC/OoSJZZ1/j5vf6EbXC0Al7kV+rFPDyn1i2jMKJfc7i9A+xqC9XzuXxrm9sIaDLdZ6pfAw==}
     peerDependencies:
       svelte: ^3 || ^4 || ^5.0.0-next.42
 
@@ -5422,6 +5434,8 @@ snapshots:
   '@poppinss/macroable@1.0.2':
     optional: true
 
+  '@prisma/client@5.17.0': {}
+
   '@react-email/render@0.0.12':
     dependencies:
       html-to-text: 9.0.5
@@ -6296,15 +6310,16 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.32.1(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0):
+  drizzle-orm@0.32.1(@prisma/client@5.17.0)(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0):
     optionalDependencies:
+      '@prisma/client': 5.17.0
       '@types/better-sqlite3': 7.6.9
       better-sqlite3: 11.1.2
       react: 18.2.0
 
-  drizzle-zod@0.5.1(drizzle-orm@0.32.1(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0))(zod@3.23.8):
+  drizzle-zod@0.5.1(drizzle-orm@0.32.1(@prisma/client@5.17.0)(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0))(zod@3.23.8):
     dependencies:
-      drizzle-orm: 0.32.1(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0)
+      drizzle-orm: 0.32.1(@prisma/client@5.17.0)(@types/better-sqlite3@7.6.9)(better-sqlite3@11.1.2)(react@18.2.0)
       zod: 3.23.8
 
   eastasianwidth@0.2.0: {}
@@ -7066,7 +7081,7 @@ snapshots:
     dependencies:
       oslo: 1.0.1
 
-  lucide-svelte@0.418.0(svelte@4.2.12):
+  lucide-svelte@0.419.0(svelte@4.2.12):
     dependencies:
       svelte: 4.2.12
 
