@@ -3,7 +3,8 @@ import type { Actions, PageServerLoad } from './$types';
 import { eq } from 'drizzle-orm';
 import { Argon2id } from 'oslo/password';
 import { redirect } from 'sveltekit-flash-message/server';
-import { message, superValidate } from 'sveltekit-superforms/client';
+import { message, superValidate } from 'sveltekit-superforms/server';
+import { zod } from 'sveltekit-superforms/adapters';
 
 import { route } from '$lib/ROUTES';
 import {
@@ -16,9 +17,9 @@ import {
 import { database } from '$lib/database/database.server';
 import { lucia } from '$lib/database/luciaAuth.server';
 import { usersTable } from '$lib/database/schema';
-import type { AlertMessageType } from '$lib/types';
 import { LOGIN_ROUTE } from '$lib/utils/navLinks';
 import { PasswordResetZodSchema } from '$validations/AuthZodSchemas';
+// import { PasswordResetZodSchema } from '$validations/AuthZodSchemas';
 
 export const load = (async (event) => {
 	const { cookies, locals } = event;
@@ -35,11 +36,12 @@ export const load = (async (event) => {
 	}
 
 	await passwordResetDashboardPageActionRateLimiter.cookieLimiter?.preflight(event);
+	const form = await superValidate(zod(PasswordResetZodSchema));
 
 	return {
 		loggedInUser: locals.user,
 		allUsers: await getAllUsers(),
-		passwordResetFormData: await superValidate(PasswordResetZodSchema)
+		passwordResetFormData: form
 	};
 }) satisfies PageServerLoad;
 
@@ -60,10 +62,7 @@ export const actions: Actions = {
 
 		if (!userId) return;
 
-		const passwordResetFormData = await superValidate<
-			typeof PasswordResetZodSchema,
-			AlertMessageType
-		>(event.request, PasswordResetZodSchema);
+		const passwordResetFormData = await superValidate(event.request, zod(PasswordResetZodSchema));
 
 		if (passwordResetFormData.valid === false) {
 			return message(passwordResetFormData, {
@@ -93,7 +92,7 @@ export const actions: Actions = {
 
 			const isSamePassword = await isSameAsOldPassword(
 				userId,
-				passwordResetFormData.data.newPassword
+				(passwordResetFormData.data as any).newPassword
 			);
 
 			if (isSamePassword) {
@@ -119,7 +118,9 @@ export const actions: Actions = {
 			}
 
 			// Hash the new password
-			const hashedPassword = await new Argon2id().hash(passwordResetFormData.data.newPassword);
+			const hashedPassword = await new Argon2id().hash(
+				(passwordResetFormData.data as any).newPassword
+			);
 
 			await database
 				.update(usersTable)

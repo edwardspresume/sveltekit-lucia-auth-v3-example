@@ -22,6 +22,7 @@ import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { EmailVerificationCodeZodSchema } from '$validations/AuthZodSchemas';
 import { eq } from 'drizzle-orm';
+import { zod } from 'sveltekit-superforms/adapters';
 
 // Function to parse user data from cookie
 const getUserDataFromCookie = (cookies: Cookies) => {
@@ -45,7 +46,7 @@ export const load = (async (event) => {
 
 	return {
 		pendingUserEmail: userData.email,
-		emailVerificationCodeFormData: await superValidate(EmailVerificationCodeZodSchema)
+		emailVerificationCodeFormData: await superValidate(zod(EmailVerificationCodeZodSchema))
 	};
 }) satisfies PageServerLoad;
 
@@ -57,10 +58,10 @@ export const actions: Actions = {
 
 		if (!userData) return redirect(303, route('/auth/register'));
 
-		const emailVerificationCodeFormData = await superValidate<
-			typeof EmailVerificationCodeZodSchema,
-			AlertMessageType
-		>(request, EmailVerificationCodeZodSchema);
+		const emailVerificationCodeFormData = await superValidate(
+			request,
+			zod(EmailVerificationCodeZodSchema)
+		);
 
 		if (emailVerificationCodeFormData.valid === false) {
 			return message(emailVerificationCodeFormData, {

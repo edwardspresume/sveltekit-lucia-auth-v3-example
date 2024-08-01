@@ -15,9 +15,9 @@ import {
 	sendPasswordResetEmail
 } from '$lib/database/authUtils.server';
 import { lucia } from '$lib/database/luciaAuth.server';
-import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { UserLoginZodSchema, passwordResetEmailZodSchema } from '$validations/AuthZodSchemas';
+import { zod } from 'sveltekit-superforms/adapters';
 
 const NO_REGISTERED_ACCOUNT_ERROR_MESSAGE =
 	"No account registered with this email. Please ensure you've entered the correct email.";
@@ -26,17 +26,14 @@ export const load = (async (event) => {
 	await passwordResetEmailRateLimiter.cookieLimiter?.preflight(event);
 
 	return {
-		userLoginFormData: await superValidate(UserLoginZodSchema),
-		passwordResetEmailFormData: await superValidate(passwordResetEmailZodSchema)
+		userLoginFormData: await superValidate(zod(UserLoginZodSchema)),
+		passwordResetEmailFormData: await superValidate(zod(passwordResetEmailZodSchema))
 	};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
 	logInUser: async ({ request, cookies }) => {
-		const userLoginFormData = await superValidate<typeof UserLoginZodSchema, AlertMessageType>(
-			request,
-			UserLoginZodSchema
-		);
+		const userLoginFormData = await superValidate(request, zod(UserLoginZodSchema));
 
 		if (userLoginFormData.valid === false) {
 			return message(userLoginFormData, {
@@ -96,10 +93,10 @@ export const actions: Actions = {
 	},
 
 	sendPasswordResetEmail: async (event) => {
-		const passwordResetEmailFormData = await superValidate<
-			typeof passwordResetEmailZodSchema,
-			AlertMessageType
-		>(event.request, passwordResetEmailZodSchema);
+		const passwordResetEmailFormData = await superValidate(
+			event.request,
+			zod(passwordResetEmailZodSchema)
+		);
 
 		try {
 			if (passwordResetEmailFormData.valid === false) {

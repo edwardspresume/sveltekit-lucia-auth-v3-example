@@ -19,6 +19,7 @@ import { passwordResetTokensTable, usersTable } from '$lib/database/schema';
 import type { AlertMessageType } from '$lib/types';
 import { DASHBOARD_ROUTE } from '$lib/utils/navLinks';
 import { PasswordResetZodSchema } from '$validations/AuthZodSchemas';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = (async (event) => {
 	await passwordResetPageActionRateLimiter.cookieLimiter?.preflight(event);
@@ -37,16 +38,13 @@ export const load = (async (event) => {
 			message
 		},
 
-		passwordResetFormData: await superValidate(PasswordResetZodSchema)
+		passwordResetFormData: await superValidate(zod(PasswordResetZodSchema))
 	};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
 	resetPassword: async (event) => {
-		const passwordResetFormData = await superValidate<
-			typeof PasswordResetZodSchema,
-			AlertMessageType
-		>(event.request, PasswordResetZodSchema);
+		const passwordResetFormData = await superValidate(event.request, zod(PasswordResetZodSchema));
 
 		if (passwordResetFormData.valid === false) {
 			return message(passwordResetFormData, {

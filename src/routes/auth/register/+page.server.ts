@@ -16,23 +16,20 @@ import {
 } from '$lib/database/authUtils.server';
 import { database } from '$lib/database/database.server';
 import { usersTable } from '$lib/database/schema';
-import type { AlertMessageType } from '$lib/types';
 import { logError } from '$lib/utils';
 import { RegisterUserZodSchema } from '$validations/AuthZodSchemas';
 import { eq } from 'drizzle-orm';
+import { zod } from 'sveltekit-superforms/adapters';
 
 export const load = (async () => {
 	return {
-		registerUserFormData: await superValidate(RegisterUserZodSchema)
+		registerUserFormData: await superValidate(zod(RegisterUserZodSchema))
 	};
 }) satisfies PageServerLoad;
 
 export const actions: Actions = {
 	registerUser: async ({ request, cookies }) => {
-		const registerUserFormData = await superValidate<
-			typeof RegisterUserZodSchema,
-			AlertMessageType
-		>(request, RegisterUserZodSchema);
+		const registerUserFormData = await superValidate(request, zod(RegisterUserZodSchema));
 
 		if (registerUserFormData.valid === false) {
 			return message(registerUserFormData, {
