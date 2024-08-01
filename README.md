@@ -1,15 +1,20 @@
-# SvelteKit Authentication with Lucia V3: An Example Project
+# SvelteKit Dev.Team AI
 
-This example project showcases how to integrate Lucia V3 for user authentication in a SvelteKit application. User data is stored in a local SQLite database. The project is split into branches, each demonstrating a different aspect of the authentication process. Each branch builds on top of the previous one, with the last branch being the most comprehensive and up-to-date.
+## Testing
 
-## Project Branches
+### E2E testubg
 
-- [Main Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/main)
-- [Email Verification Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/email_verification)
-- [Password Reset Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/password_reset)
-- [Oauth & account linking Branch](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example/tree/oauth)
+Uses [playwright](https://playwright.dev/)
 
-For a guide on how to implement these features, check out the video tutorial series: [Lucia Auth V3 with SvelteKit](https://youtube.com/playlist?list=PL-thR8qW-CU3ZmizJqrSAatWHh6z_JnS7&si=Qage2gw2mJarmZk4).
+Run e2e tests via `pnpm run e2e:test`
+
+### Unit testing
+
+[Testing Svelte components](https://github.com/wd-David/svelte-component-test-recipes?tab=readme-ov-file#svelte-component-test-recipes)
+
+## Authentication
+
+Based on the following video tutorial series: [Lucia Auth V3 with SvelteKit](https://youtube.com/playlist?list=PL-thR8qW-CU3ZmizJqrSAatWHh6z_JnS7&si=Qage2gw2mJarmZk4).
 
 ## Prerequisites
 

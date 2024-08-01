@@ -14,3 +14,7 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 localDB/*
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
