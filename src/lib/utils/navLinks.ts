@@ -35,6 +35,12 @@ export const mainNavLinks = {
 		ariaLabel: 'Go to tasks'
 	}),
 
+	projects: createNavLink({
+		title: 'Projects',
+		href: route('/projects'),
+		ariaLabel: 'Go to project dashboard'
+	}),
+
 	dashboard: createNavLink({
 		title: 'Dashboard',
 		href: route('/dashboard'),
