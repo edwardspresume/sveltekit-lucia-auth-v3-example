@@ -18,7 +18,7 @@ const PAGES = {
   "/dashboard": `/dashboard`,
   "/overview": `/overview`,
   "/projects": `/projects`,
-  "/projects/[slug]": (params: { slug: (string | number) }) => {
+  "/projects/[slug=slug]": (params: { slug: (Parameters<typeof import('../params/slug.ts').match>[0]) }) => {
     return `/projects/${params.slug}`
   },
   "/tasks": `/tasks`,
@@ -156,7 +156,7 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/auth/email-verification': never, '/auth/login': never, '/auth/register': never, '/auth/reset-password': never, '/cards': never, '/dashboard': never, '/overview': never, '/projects': never, '/projects/[slug]': 'slug', '/tasks': never, '/team': never }
+  PAGES: { '/': never, '/auth/email-verification': never, '/auth/login': never, '/auth/register': never, '/auth/reset-password': never, '/cards': never, '/dashboard': never, '/overview': never, '/projects': never, '/projects/[slug=slug]': 'slug', '/tasks': never, '/team': never }
   SERVERS: { 'POST /api/projects': never, 'GET /api/projects': never, 'GET /auth/oauth/github': never, 'GET /auth/oauth/github/callback': never, 'GET /auth/oauth/google': never, 'GET /auth/oauth/google/callback': never }
   ACTIONS: { 'verifyCode /auth/email-verification': never, 'sendNewCode /auth/email-verification': never, 'logInUser /auth/login': never, 'sendPasswordResetEmail /auth/login': never, 'registerUser /auth/register': never, 'resetPassword /auth/reset-password': never, 'logout /dashboard': never, 'changePassword /dashboard': never, 'deleteAllUsers /dashboard': never }
   LINKS: Record<string, never>

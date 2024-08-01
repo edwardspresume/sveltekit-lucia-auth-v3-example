@@ -5,14 +5,28 @@
 
 export default {
     api: {
-        /**
-         * POST /api
-         */
-        async POST(init?: RequestInit): Promise<any> {
-            return fetch(`/api`, {
-                method: 'POST',
-                ...init,
-            }).then((res) => res.json());
+        projects: {
+            /**
+             * POST /api/projects
+             */
+            async POST(
+                init?: RequestInit,
+            ): Promise<{ id: FormDataEntryValue | null }> {
+                return fetch(`/api/projects`, {
+                    method: 'POST',
+                    ...init,
+                }).then((res) => res.json());
+            },
+
+            /**
+             * GET /api/projects
+             */
+            async GET(init?: RequestInit): Promise<any> {
+                return fetch(`/api/projects`, {
+                    method: 'GET',
+                    ...init,
+                }).then((res) => res.json());
+            },
         },
     },
 
