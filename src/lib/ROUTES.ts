@@ -18,6 +18,9 @@ const PAGES = {
   "/dashboard": `/dashboard`,
   "/overview": `/overview`,
   "/projects": `/projects`,
+  "/projects/[slug]": (params: { slug: (string | number) }) => {
+    return `/projects/${params.slug}`
+  },
   "/tasks": `/tasks`,
   "/team": `/team`
 }
@@ -26,7 +29,8 @@ const PAGES = {
  * SERVERS
  */
 const SERVERS = {
-  "POST /api": `/api`,
+  "POST /api/projects": `/api/projects`,
+  "GET /api/projects": `/api/projects`,
   "GET /auth/oauth/github": `/auth/oauth/github`,
   "GET /auth/oauth/github/callback": `/auth/oauth/github/callback`,
   "GET /auth/oauth/google": `/auth/oauth/google`,
@@ -152,9 +156,9 @@ export function route<T extends keyof AllTypes>(key: T, ...params: any[]): strin
 * ```
 */
 export type KIT_ROUTES = {
-  PAGES: { '/': never, '/auth/email-verification': never, '/auth/login': never, '/auth/register': never, '/auth/reset-password': never, '/cards': never, '/dashboard': never, '/overview': never, '/projects': never, '/tasks': never, '/team': never }
-  SERVERS: { 'POST /api': never, 'GET /auth/oauth/github': never, 'GET /auth/oauth/github/callback': never, 'GET /auth/oauth/google': never, 'GET /auth/oauth/google/callback': never }
+  PAGES: { '/': never, '/auth/email-verification': never, '/auth/login': never, '/auth/register': never, '/auth/reset-password': never, '/cards': never, '/dashboard': never, '/overview': never, '/projects': never, '/projects/[slug]': 'slug', '/tasks': never, '/team': never }
+  SERVERS: { 'POST /api/projects': never, 'GET /api/projects': never, 'GET /auth/oauth/github': never, 'GET /auth/oauth/github/callback': never, 'GET /auth/oauth/google': never, 'GET /auth/oauth/google/callback': never }
   ACTIONS: { 'verifyCode /auth/email-verification': never, 'sendNewCode /auth/email-verification': never, 'logInUser /auth/login': never, 'sendPasswordResetEmail /auth/login': never, 'registerUser /auth/register': never, 'resetPassword /auth/reset-password': never, 'logout /dashboard': never, 'changePassword /dashboard': never, 'deleteAllUsers /dashboard': never }
   LINKS: Record<string, never>
-  Params: Record<string, never>
+  Params: { slug: never }
 }
