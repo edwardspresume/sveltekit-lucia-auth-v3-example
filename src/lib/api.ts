@@ -21,7 +21,22 @@ export default {
             /**
              * GET /api/projects
              */
-            async GET(init?: RequestInit): Promise<any> {
+            async GET(
+                init?: RequestInit,
+            ): Promise<
+                {
+                    id: number;
+                    createdAt: Date;
+                    updatedAt: Date;
+                    name: string;
+                    description: string | null;
+                    status: string | null;
+                    authorId: number;
+                    slug: string;
+                    published: boolean;
+                    userId: number | null;
+                }[]
+            > {
                 return fetch(`/api/projects`, {
                     method: 'GET',
                     ...init,
