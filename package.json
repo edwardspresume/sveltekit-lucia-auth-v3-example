@@ -12,8 +12,8 @@
 		"format": "prettier --write .",
 		"test": "vitest",
 		"e2e:test": "playwright test",
-		"prisma:init": "prisma migrate dev --name init",
-		"prisma:reset": "prisma migrate reset",
+		"prisma:init": "pnpm dlx prisma migrate dev --name init",
+		"prisma:reset": "pnpm dlx prisma migrate reset",
 		"db:generate": "drizzle-kit generate:sqlite",
 		"db:push": "drizzle-kit push:sqlite",
 		"db:pull": "drizzle-kit introspect:sqlite",
@@ -68,6 +68,7 @@
 		"seed": "pnpx vite-node prisma/seed.ts"
 	},
 	"dependencies": {
+		"@faker-js/faker": "^8.4.1",
 		"@lucia-auth/adapter-drizzle": "^1.0.2",
 		"@prisma/client": "^5.17.0",
 		"arctic": "^1.2.0",

@@ -10,13 +10,39 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model User {
+  id       Int       @id @default(autoincrement())
+  name     String?
+  email    String    @unique
+  projects Project[]
+  profile  Profile?
+}
+
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  userId Int     @unique
+  user   User    @relation(fields: [userId], references: [id])
+}
+
 model Project {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   name        String
-  description String
+  description String?
+  status      String?
+  authorId    Int
   slug        String  @unique
   published   Boolean @default(false)
+  tags        Tag[]
+  User        User?   @relation(fields: [userId], references: [id])
+  userId      Int?
+}
+
+model Tag {
+  id       Int       @id @default(autoincrement())
+  name     String
+  projects Project[]
 }

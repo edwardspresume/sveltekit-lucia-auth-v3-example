@@ -6,7 +6,7 @@
 	import Button from '$components/ui/button/button.svelte';
 </script>
 
-<div class="grid gap-5 text-center place-items-center">
+<div class="grid place-items-center gap-5 text-center">
 	{#if $page.status === 404}
 		<h1 class="text-2xl font-bold">404 - Page Not Found</h1>
 
@@ -19,4 +19,8 @@
 	{:else}
 		<h1>{$page.status}: {$page.error?.message}</h1>
 	{/if}
+
+	<pre>
+		{JSON.stringify($page, null, 2)}
+	</pre>
 </div>
