@@ -77,6 +77,7 @@
 	},
 	"dependencies": {
 		"@faker-js/faker": "^8.4.1",
+		"@libsql/client": "^0.8.0",
 		"@lucia-auth/adapter-drizzle": "^1.0.2",
 		"@prisma/client": "^5.17.0",
 		"@stripe/stripe-js": "^4.1.0",
