@@ -1,20 +1,21 @@
 import * as dotenv from 'dotenv';
-import type { Config } from 'drizzle-kit';
+import { defineConfig } from 'drizzle-kit';
 
 dotenv.config();
-const { DATABASE_URL } = process.env;
+const { DRIZZLE_DATABASE_URL } = process.env;
 
-if (!DATABASE_URL) {
+if (!DRIZZLE_DATABASE_URL) {
 	throw new Error(
-		'No DATABASE_URL defined in the environment variables. Please ensure it is set in the .env file.'
+		'No DRIZZLE_DATABASE_URL defined in the environment variables. Please ensure it is set in the .env file.'
 	);
 }
 
-export default {
+export default defineConfig({
 	schema: 'src/lib/database/schema.ts',
 	out: './drizzleMigrations',
-	driver: 'better-sqlite',
+	dialect: 'sqlite',
+	driver: 'turso',
 	dbCredentials: {
-		url: DATABASE_URL
+		url: DRIZZLE_DATABASE_URL
 	}
-} satisfies Config;
+});
