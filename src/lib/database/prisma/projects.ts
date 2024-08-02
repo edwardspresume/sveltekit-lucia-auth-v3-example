@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import { db } from './db';
+import { prisma } from './db';
 
 export class Projects {
-	db: PrismaClient = db;
+	db: PrismaClient = prisma;
 
 	async bySlug(slug: string) {
 		return await this.db.project.findUnique({

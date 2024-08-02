@@ -1,4 +1,4 @@
-import { db } from '$lib/database/prisma';
+import { prisma } from '$lib/database/prisma';
 import { json, type RequestHandler } from '@sveltejs/kit';
 
 // USAGE: from client:
@@ -12,6 +12,6 @@ export const POST: RequestHandler = async (event) => {
 };
 
 export const GET = async () => {
-	const projects = await db.project.findMany();
+	const projects = await prisma.project.findMany();
 	return json(projects);
 };

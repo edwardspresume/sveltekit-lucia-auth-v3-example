@@ -22,6 +22,30 @@ Experimenting with different approaches to find the best fit.
 
 Planning to use [Stripe](https://docs.stripe.com/)
 
+### Invoices
+
+- [Invoices](https://docs.stripe.com/api/invoices/object)
+
+Invoices are statements of amounts owed by a customer, and are either generated one-off, or generated periodically from a subscription.
+They contain invoice items, and proration adjustments that may be caused by subscription upgrades/downgrades (if necessary).
+
+`payment_intent` nullable string (Expandable)
+
+The `PaymentIntent` associated with this invoice. The PaymentIntent is generated when the invoice is finalized, and can then be used to pay the invoice. Note that voiding an invoice will cancel the PaymentIntent.
+
+### Payment intent
+
+- [Payment intent](https://docs.stripe.com/api/payment_intents/object)
+- [Create payment intent](https://docs.stripe.com/api/payment_intents/create)
+
+```ts
+`client_secret` nullable string
+
+The client secret of this `PaymentIntent`. Used for client-side retrieval using a publishable key.
+
+The client secret can be used to complete a payment from your frontend. It should not be stored, logged, or exposed to anyone other than the customer. Make sure that you have TLS enabled on any page that includes the client secret.
+```
+
 ## Testing
 
 ### E2E testing

@@ -6,16 +6,17 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider = "postgres" // "sqlite"
+  url      = env("PRISMA_POSTGRES_DEV_DATABASE_URL")
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  name     String?
-  email    String    @unique
-  projects Project[]
-  profile  Profile?
+  id           Int            @id @default(autoincrement())
+  name         String?
+  email        String         @unique
+  projects     Project[]
+  profile      Profile?
+  Subscription Subscription[]
 }
 
 model Profile {
@@ -45,4 +46,49 @@ model Tag {
   id       Int       @id @default(autoincrement())
   name     String
   projects Project[]
+}
+
+model Product {
+  id            String         @id @default(uuid())
+  name          String
+  priceCents    Int
+  createdAt     DateTime       @default(now())
+  subscriptions Subscription[]
+}
+
+model Subscription {
+  id           Int                @id @default(autoincrement())
+  userId       Int
+  productId    String
+  status       SubscriptionStatus
+  startDate    DateTime           @default(now())
+  endDate      DateTime?
+  createdAt    DateTime           @default(now())
+  user         User               @relation(fields: [userId], references: [id])
+  product      Product            @relation(fields: [productId], references: [id])
+  transactions Transaction[]
+}
+
+model Transaction {
+  id                    Int               @id @default(autoincrement())
+  subscriptionId        Int
+  amountCents           Int
+  currency              String            @default("USD")
+  status                TransactionStatus
+  stripePaymentIntentId String?
+  createdAt             DateTime          @default(now())
+  subscription          Subscription      @relation(fields: [subscriptionId], references: [id])
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+enum TransactionStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
 }
