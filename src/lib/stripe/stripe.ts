@@ -1,9 +1,9 @@
 import Stripe from 'stripe';
-import { STRIPE_SECRET } from '$env/static/private';
+import { STRIPE_SECRET_KEY_LIVE, STRIPE_SECRET_KEY } from '$env/static/private';
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY_LIVE ?? STRIPE_SECRET ?? '', {
+export const stripe = new Stripe(STRIPE_SECRET_KEY_LIVE ?? STRIPE_SECRET_KEY ?? '', {
 	// https://github.com/stripe/stripe-node#configuration
-	apiVersion: '2022-11-15'
+	apiVersion: '2024-06-20'
 	// Register this as an official Stripe plugin.
 	// https://stripe.com/docs/building-plugins#setappinfo
 	// appInfo: {

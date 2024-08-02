@@ -17,6 +17,9 @@ importers:
       '@prisma/client':
         specifier: ^5.17.0
         version: 5.17.0
+      '@stripe/stripe-js':
+        specifier: ^4.1.0
+        version: 4.1.0
       '@supabase/auth-helpers-sveltekit':
         specifier: ^0.13.0
         version: 0.13.0(@supabase/supabase-js@2.45.0)(@sveltejs/kit@2.5.19(@sveltejs/vite-plugin-svelte@3.1.1(svelte@4.2.18)(vite@5.3.5(@types/node@22.0.2)))(svelte@4.2.18)(vite@5.3.5(@types/node@22.0.2)))
@@ -83,6 +86,9 @@ importers:
       svelte-sonner:
         specifier: ^0.3.18
         version: 0.3.27(svelte@4.2.18)
+      svelte-stripe:
+        specifier: ^1.2.0
+        version: 1.2.0(@stripe/stripe-js@4.1.0)(svelte@4.2.18)
       tailwind-merge:
         specifier: ^2.2.1
         version: 2.4.0
@@ -1626,6 +1632,10 @@ packages:
 
   '@sodaru/yup-to-json-schema@2.0.1':
     resolution: {integrity: sha512-lWb0Wiz8KZ9ip/dY1eUqt7fhTPmL24p6Hmv5Fd9pzlzAdw/YNcWZr+tiCT4oZ4Zyxzi9+1X4zv82o7jYvcFxYA==}
+
+  '@stripe/stripe-js@4.1.0':
+    resolution: {integrity: sha512-HhstGRUz/4JdbZpb26OcOf8Qb/cFR02arvHvgz4sPFLSnI6ZNHC53Jc6JP/FGNwxtrF719YyUnK0gGy4oyhucQ==}
+    engines: {node: '>=12.16'}
 
   '@supabase/auth-helpers-shared@0.7.0':
     resolution: {integrity: sha512-FBFf2ei2R7QC+B/5wWkthMha8Ca2bWHAndN+syfuEUUfufv4mLcAgBCcgNg5nJR8L0gZfyuaxgubtOc9aW3Cpg==}
@@ -4173,6 +4183,12 @@ packages:
     peerDependencies:
       svelte: ^3.0.0 || ^4.0.0 || ^5.0.0-next.1
 
+  svelte-stripe@1.2.0:
+    resolution: {integrity: sha512-k2cBOceZLfstjlnZNoGv2eSvrhJ7piha8zRvSFD8g/n0f669j5wS7Ba5xInVTtgKMU2QdNpj5niYR00bqdxbKw==}
+    peerDependencies:
+      '@stripe/stripe-js': ^3
+      svelte: ^3 || ^4
+
   svelte-subscribe@2.0.1:
     resolution: {integrity: sha512-eKXIjLxB4C7eQWPqKEdxcGfNXm2g/qJ67zmEZK/GigCZMfrTR3m7DPY93R6MX+5uoqM1FRYxl8LZ1oy4URWi2A==}
     peerDependencies:
@@ -5667,6 +5683,8 @@ snapshots:
 
   '@sodaru/yup-to-json-schema@2.0.1':
     optional: true
+
+  '@stripe/stripe-js@4.1.0': {}
 
   '@supabase/auth-helpers-shared@0.7.0(@supabase/supabase-js@2.45.0)':
     dependencies:
@@ -8351,6 +8369,11 @@ snapshots:
 
   svelte-sonner@0.3.27(svelte@4.2.18):
     dependencies:
+      svelte: 4.2.18
+
+  svelte-stripe@1.2.0(@stripe/stripe-js@4.1.0)(svelte@4.2.18):
+    dependencies:
+      '@stripe/stripe-js': 4.1.0
       svelte: 4.2.18
 
   svelte-subscribe@2.0.1(svelte@4.2.18):

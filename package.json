@@ -75,6 +75,7 @@
 		"@faker-js/faker": "^8.4.1",
 		"@lucia-auth/adapter-drizzle": "^1.0.2",
 		"@prisma/client": "^5.17.0",
+		"@stripe/stripe-js": "^4.1.0",
 		"@supabase/auth-helpers-sveltekit": "^0.13.0",
 		"@supabase/supabase-js": "^2.45.0",
 		"arctic": "^1.2.0",
@@ -97,6 +98,7 @@
 		"svelte-headless-table": "^0.18.2",
 		"svelte-radix": "^1.1.0",
 		"svelte-sonner": "^0.3.18",
+		"svelte-stripe": "^1.2.0",
 		"tailwind-merge": "^2.2.1",
 		"tailwind-variants": "^0.2.1",
 		"vite-plugin-kit-routes": "^0.6.5"
