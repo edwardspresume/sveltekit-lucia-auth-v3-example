@@ -8,11 +8,19 @@ Uses [shadcn for svelte]()
 
 ## Database/ORMs
 
-Currently using [Drizzle ORM]() and [Prisma]()
+Currently using
+
+- [Drizzle ORM]()
+  - [Turso](https://turso.tech/) SqLite for production
+  - [BetterSqlite3]()
+- [Prisma](https://www.prisma.io/)
+- [Supabase](https://supabase.com/)
+
+Experimenting with different approaches to find the best fit.
 
 ## Payment
 
-Planning to use [Stripe]()
+Planning to use [Stripe](https://docs.stripe.com/)
 
 ## Testing
 
@@ -30,7 +38,13 @@ Run `vitest` or `pnpm run test`
 
 ## Authentication
 
-Based on the following video tutorial series: [Lucia Auth V3 with SvelteKit](https://youtube.com/playlist?list=PL-thR8qW-CU3ZmizJqrSAatWHh6z_JnS7&si=Qage2gw2mJarmZk4).
+Lucia Auth based on the following video tutorial series: [Lucia Auth V3 with SvelteKit](https://github.com/edwardspresume/sveltekit-lucia-auth-v3-example) with [video tutorial series](https://youtube.com/playlist?list=PL-thR8qW-CU3ZmizJqrSAatWHh6z_JnS7&si=Qage2gw2mJarmZk4).
+
+- Email verification
+- Password reset
+- OAuth
+
+TODO: Passkeys via [passlock](https://passlock.dev/)
 
 ## Vite plugins
 
