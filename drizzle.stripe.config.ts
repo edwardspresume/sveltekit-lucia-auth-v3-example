@@ -11,11 +11,12 @@ if (!DRIZZLE_DATABASE_URL) {
 }
 
 export default defineConfig({
-  schema: "src/lib/database/drizzle/schema.ts",
-  out: "./drizzleMigrations",
+  schema: "src/lib/database/drizzle/stripe/turso-stripe-schema.ts",
+  out: "./migrations",
   dialect: "sqlite",
   driver: "turso",
   dbCredentials: {
-    url: DRIZZLE_DATABASE_URL,
+    url: process.env.DB_URL!,
+    authToken: process.env.DB_TOKEN,
   },
 });
